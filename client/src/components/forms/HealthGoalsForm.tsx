@@ -96,10 +96,13 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
                 htmlFor={`goal-${goal.id}`}
                 className={`flex flex-col items-center justify-center p-4 h-full bg-white border-2 rounded-lg cursor-pointer interactive-card relative ${
                   isSelected
-                    ? "border-primary-500 bg-primary-50 shadow-md transform scale-[1.02]"
-                    : "border-neutral-200"
+                    ? "border-primary-500 bg-primary-50 shadow-lg transform scale-[1.02]"
+                    : "border-neutral-200 hover:border-primary-200"
                 } ${isSelected ? "pulse-animation" : ""}`}
               >
+                {isSelected && (
+                  <div className="absolute top-0 left-0 w-full h-1 bg-primary-500 rounded-t-lg"></div>
+                )}
 
                 <Icon
                   className={`h-8 w-8 mb-2 ${
@@ -124,7 +127,7 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
                       <svg className="w-3 h-3 mr-1" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      Selected
+                      Select
                     </>
                   ) : (
                     "Select"
