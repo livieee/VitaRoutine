@@ -127,7 +127,7 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
                       <svg className="w-3 h-3 mr-1" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      Select
+                      Selected
                     </>
                   ) : (
                     "Select"
