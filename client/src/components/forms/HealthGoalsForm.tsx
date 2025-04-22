@@ -83,7 +83,6 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
                     ? "border-primary-500 bg-primary-50"
                     : "border-neutral-200"
                 }`}
-                onClick={() => toggleGoal(goal.id)}
               >
                 <Icon
                   className={`h-8 w-8 mb-2 ${
