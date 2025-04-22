@@ -165,3 +165,41 @@ input[type="range"]::-webkit-slider-thumb {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* Progress bar animation */
+@keyframes progress-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
+
+@keyframes gradient-move {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes highlight-fade {
+  0% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+.progress-bar-animate {
+  animation: progress-pulse 2s ease-in-out infinite;
+  background-size: 200% 200%;
+}
+
+.gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient-move 3s ease infinite;
+}
+
+.step-transition-highlight {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 30px;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 100%);
+  animation: highlight-fade 1.5s ease-out forwards;
+}

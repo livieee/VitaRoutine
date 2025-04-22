@@ -52,11 +52,34 @@ export default function ProgressTracker({ currentStep, totalSteps }: ProgressTra
         </div>
         
         {/* Progress bar */}
-        <div className="w-full bg-white rounded-full h-3 shadow-inner relative overflow-hidden">
+        <div className="w-full bg-white rounded-full h-4 shadow-inner relative overflow-hidden">
           <div
-            className="bg-gradient-to-r from-primary-600 to-primary-500 h-full rounded-full transition-all duration-500 shadow-sm"
+            className="bg-gradient-to-r from-primary-600 via-primary-500 to-primary-400 h-full rounded-full transition-all duration-1000 ease-in-out transform-gpu shadow-sm gradient-animate"
             style={{ width: `${percentage}%` }}
-          ></div>
+          >
+            {currentStep === 2 && (
+              <div className="absolute inset-0 bg-white opacity-30 animate-pulse"></div>
+            )}
+            
+            {/* Special highlight effect when transitioning to step 2 */}
+            {currentStep === 2 && (
+              <div className="step-transition-highlight"></div>
+            )}
+          </div>
+          
+          {/* Subtle progress markers */}
+          <div className="absolute inset-y-0 left-1/3 w-px h-full bg-white opacity-50"></div>
+          <div className="absolute inset-y-0 left-2/3 w-px h-full bg-white opacity-50"></div>
+          
+          {/* Progress labels under the bar */}
+          <div className="absolute top-full mt-1 left-1/3 transform -translate-x-1/2">
+            <div className={`h-1 w-1 rounded-full ${currentStep >= 2 ? 'bg-primary-600' : 'bg-primary-200'} mx-auto mb-1`}></div>
+            <span className="text-[10px] text-primary-700">Step 2</span>
+          </div>
+          <div className="absolute top-full mt-1 left-2/3 transform -translate-x-1/2">
+            <div className={`h-1 w-1 rounded-full ${currentStep >= 3 ? 'bg-primary-600' : 'bg-primary-200'} mx-auto mb-1`}></div>
+            <span className="text-[10px] text-primary-700">Step 3</span>
+          </div>
         </div>
       </div>
     </div>
