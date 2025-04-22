@@ -94,28 +94,41 @@ export default function CalendarSync({ supplementRoutine }: CalendarSyncProps) {
           </Button>
         </div>
         
-        <div className="mt-6">
-          <h5 className="font-medium mb-2">Set Reminder Preferences</h5>
-          <div className="flex items-center mb-2 space-x-2">
-            <Checkbox 
-              id="reminder-15min" 
-              checked={reminder15Min}
-              onCheckedChange={(checked) => setReminder15Min(checked as boolean)} 
-            />
-            <Label htmlFor="reminder-15min" className="text-neutral-700">
-              15 minutes before
-            </Label>
+        <div className="mt-8 border border-neutral-100 rounded-lg p-4 bg-neutral-50">
+          <h5 className="font-medium mb-4 text-neutral-800 flex items-center">
+            <Check className="h-4 w-4 mr-2 text-primary-500" />
+            Set Reminder Preferences
+          </h5>
+          
+          <div className="space-y-3 pl-2">
+            <div className="flex items-center space-x-3 transition-all duration-200 hover:bg-white p-2 rounded-md">
+              <Checkbox 
+                id="reminder-15min" 
+                checked={reminder15Min}
+                onCheckedChange={(checked) => setReminder15Min(checked as boolean)}
+                className="h-5 w-5 data-[state=checked]:bg-primary"
+              />
+              <Label htmlFor="reminder-15min" className="text-neutral-700 cursor-pointer">
+                15 minutes before supplement time
+              </Label>
+            </div>
+            
+            <div className="flex items-center space-x-3 transition-all duration-200 hover:bg-white p-2 rounded-md">
+              <Checkbox 
+                id="reminder-notification" 
+                checked={reminderNotification}
+                onCheckedChange={(checked) => setReminderNotification(checked as boolean)}
+                className="h-5 w-5 data-[state=checked]:bg-primary"
+              />
+              <Label htmlFor="reminder-notification" className="text-neutral-700 cursor-pointer">
+                Send mobile notification
+              </Label>
+            </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="reminder-notification" 
-              checked={reminderNotification}
-              onCheckedChange={(checked) => setReminderNotification(checked as boolean)} 
-            />
-            <Label htmlFor="reminder-notification" className="text-neutral-700">
-              Send mobile notification
-            </Label>
-          </div>
+          
+          <p className="text-xs text-neutral-500 mt-4 italic">
+            These settings will be applied to all calendar events when syncing.
+          </p>
         </div>
       </div>
     </div>
