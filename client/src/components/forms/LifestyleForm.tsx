@@ -55,6 +55,7 @@ export default function LifestyleForm({
             type="time"
             id="wake-time"
             {...register("wakeTime", { required: true })}
+            className="enhanced-input focus:border-primary-300 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
           />
         </div>
         
@@ -66,6 +67,7 @@ export default function LifestyleForm({
             type="time"
             id="sleep-time"
             {...register("sleepTime", { required: true })}
+            className="enhanced-input focus:border-primary-300 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
           />
         </div>
       </div>
@@ -83,8 +85,11 @@ export default function LifestyleForm({
           step={1}
           value={[sleepQuality]}
           onValueChange={handleSleepQualityChange}
-          className="w-full"
+          className="w-full transition-all duration-200"
         />
+        <div className="mt-2 text-center">
+          <span className="text-primary-500 font-medium">Your rating: {sleepQuality}</span>
+        </div>
         <div className="flex justify-between mt-1">
           <span className="text-xs text-neutral-500">1</span>
           <span className="text-xs text-neutral-500">2</span>
@@ -107,8 +112,11 @@ export default function LifestyleForm({
           step={1}
           value={[stressLevel]}
           onValueChange={handleStressLevelChange}
-          className="w-full"
+          className="w-full transition-all duration-200"
         />
+        <div className="mt-2 text-center">
+          <span className="text-primary-500 font-medium">Your rating: {stressLevel}</span>
+        </div>
         <div className="flex justify-between mt-1">
           <span className="text-xs text-neutral-500">1</span>
           <span className="text-xs text-neutral-500">2</span>
@@ -127,7 +135,7 @@ export default function LifestyleForm({
           onValueChange={(value) => setValue("menstrualPhase", value)}
           defaultValue={defaultValues.menstrualPhase}
         >
-          <SelectTrigger id="menstrual-phase">
+          <SelectTrigger id="menstrual-phase" className="enhanced-input focus:border-primary-300 focus:ring-2 focus:ring-primary-200 transition-all duration-200">
             <SelectValue placeholder="Not applicable" />
           </SelectTrigger>
           <SelectContent>
@@ -150,7 +158,7 @@ export default function LifestyleForm({
           onValueChange={(value) => setValue("dietPreference", value)}
           defaultValue={defaultValues.dietPreference}
         >
-          <SelectTrigger id="diet-preference">
+          <SelectTrigger id="diet-preference" className="enhanced-input focus:border-primary-300 focus:ring-2 focus:ring-primary-200 transition-all duration-200">
             <SelectValue placeholder="Select a diet preference" />
           </SelectTrigger>
           <SelectContent>
@@ -175,6 +183,7 @@ export default function LifestyleForm({
           id="food-allergies"
           placeholder="e.g., dairy, nuts, gluten, etc."
           {...register("foodAllergies")}
+          className="enhanced-input focus:border-primary-300 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
         />
       </div>
       

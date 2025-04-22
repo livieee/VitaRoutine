@@ -150,7 +150,7 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
           id="other-goals"
           placeholder="e.g., Joint pain, hormone balance, etc."
           {...register("otherGoals")}
-          className="resize-none"
+          className="resize-none enhanced-input focus:border-primary-300 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
           rows={3}
         />
       </div>
