@@ -94,11 +94,11 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
               />
               <label
                 htmlFor={`goal-${goal.id}`}
-                className={`flex flex-col items-center justify-center p-4 h-full bg-white border-2 rounded-lg cursor-pointer transition-all hover:border-primary-300 hover:bg-primary-50 hover:shadow-md relative ${
+                className={`flex flex-col items-center justify-center p-4 h-full bg-white border-2 rounded-lg cursor-pointer interactive-card relative ${
                   isSelected
                     ? "border-primary-500 bg-primary-50 shadow-md transform scale-[1.02]"
                     : "border-neutral-200"
-                }`}
+                } ${isSelected ? "pulse-animation" : ""}`}
               >
                 {isSelected && (
                   <div className="absolute top-2 right-2 h-5 w-5 bg-primary-500 rounded-full flex items-center justify-center">
@@ -156,7 +156,7 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
       </div>
       
       <div className="flex justify-center w-full mt-6">
-        <Button type="submit" size="lg" className="text-lg font-medium w-full sm:w-1/2 py-6">
+        <Button type="submit" size="lg" className="text-lg font-medium w-full sm:w-1/2 py-6 button-gradient border-none shadow-lg">
           Continue to Next Step →
         </Button>
       </div>

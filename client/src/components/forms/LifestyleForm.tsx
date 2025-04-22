@@ -184,7 +184,7 @@ export default function LifestyleForm({
           variant="outline" 
           onClick={onBack}
           size="lg"
-          className="px-6"
+          className="px-6 hover:bg-neutral-50 hover:border-primary-300 interactive-card"
         >
           ← Back
         </Button>
@@ -192,7 +192,7 @@ export default function LifestyleForm({
           type="submit" 
           disabled={isLoading} 
           size="lg" 
-          className="text-lg font-medium w-2/3 py-6"
+          className={`text-lg font-medium w-2/3 py-6 border-none shadow-lg ${isLoading ? 'bg-neutral-400' : 'button-gradient'}`}
         >
           {isLoading ? "Generating..." : "Generate Routine →"}
         </Button>
