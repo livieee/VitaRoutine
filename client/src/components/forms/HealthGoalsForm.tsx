@@ -30,8 +30,11 @@ const HEALTH_GOALS = [
 
 export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoalsFormProps) {
   const [selectedGoals, setSelectedGoals] = useState<string[]>(defaultValues.healthGoals || []);
-  const { register, handleSubmit, formState: { errors } } = useForm<HealthGoalsFormData>({
-    defaultValues
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<HealthGoalsFormData>({
+    defaultValues: {
+      ...defaultValues,
+      healthGoals: selectedGoals
+    }
   });
   const { toast } = useToast();
 
@@ -43,6 +46,7 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
       newSelectedGoals = [...selectedGoals, goalId];
     }
     setSelectedGoals(newSelectedGoals);
+    setValue('healthGoals', newSelectedGoals);
     console.log("Selected goals:", newSelectedGoals);
   };
 
@@ -55,16 +59,24 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
       return;
     }
     
-    onSubmit({
+    const submitData = {
       healthGoals: selectedGoals,
       otherGoals: data.otherGoals
-    });
+    };
+    console.log("Submitting form data:", submitData);
+    onSubmit(submitData);
   };
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="form-step">
       <h3 className="text-xl font-semibold mb-2">What are your health goals?</h3>
-      <p className="text-neutral-600 mb-6">Select all that apply. You can choose multiple options.</p>
+      <p className="text-neutral-600 mb-2">Select all that apply. You can choose multiple options.</p>
+      <div className="flex items-center mb-6 p-2 bg-blue-50 rounded text-blue-700 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+        </svg>
+        <span>Click on any goal below to select it. Selected goals will be highlighted.</span>
+      </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         {HEALTH_GOALS.map((goal) => {
@@ -82,9 +94,9 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
               />
               <label
                 htmlFor={`goal-${goal.id}`}
-                className={`flex flex-col items-center justify-center p-4 h-full bg-white border-2 rounded-lg cursor-pointer transition-all hover:bg-neutral-50 relative ${
+                className={`flex flex-col items-center justify-center p-4 h-full bg-white border-2 rounded-lg cursor-pointer transition-all hover:border-primary-300 hover:bg-primary-50 hover:shadow-md relative ${
                   isSelected
-                    ? "border-primary-500 bg-primary-50"
+                    ? "border-primary-500 bg-primary-50 shadow-md transform scale-[1.02]"
                     : "border-neutral-200"
                 }`}
               >
@@ -100,7 +112,30 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
                     isSelected ? "text-primary-500" : "text-neutral-400"
                   }`}
                 />
-                <span className="font-medium text-center">{goal.label}</span>
+                <span className="font-medium text-center mb-2">{goal.label}</span>
+                {isSelected ? (
+                  <button 
+                    type="button"
+                    className="mt-1 text-sm text-white bg-primary-500 px-3 py-1 rounded-full hover:bg-primary-600 focus:outline-none"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleGoal(goal.id);
+                    }}
+                  >
+                    Selected
+                  </button>
+                ) : (
+                  <button 
+                    type="button"
+                    className="mt-1 text-sm text-primary-500 bg-white border border-primary-300 px-3 py-1 rounded-full hover:bg-primary-50 focus:outline-none"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleGoal(goal.id);
+                    }}
+                  >
+                    Select
+                  </button>
+                )}
               </label>
             </div>
           );
@@ -120,9 +155,9 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
         />
       </div>
       
-      <div className="flex justify-end">
-        <Button type="submit" size="lg" className="text-lg font-medium">
-          Continue
+      <div className="flex justify-center w-full mt-6">
+        <Button type="submit" size="lg" className="text-lg font-medium w-full sm:w-1/2 py-6">
+          Continue to Next Step →
         </Button>
       </div>
     </form>

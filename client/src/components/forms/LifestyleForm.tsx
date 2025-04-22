@@ -178,16 +178,23 @@ export default function LifestyleForm({
         />
       </div>
       
-      <div className="flex justify-between pt-2">
+      <div className="flex justify-between pt-6">
         <Button 
           type="button" 
           variant="outline" 
           onClick={onBack}
+          size="lg"
+          className="px-6"
         >
-          Back
+          ← Back
         </Button>
-        <Button type="submit" disabled={isLoading} size="lg" className="text-lg font-medium">
-          {isLoading ? "Generating..." : "Generate Routine"}
+        <Button 
+          type="submit" 
+          disabled={isLoading} 
+          size="lg" 
+          className="text-lg font-medium w-2/3 py-6"
+        >
+          {isLoading ? "Generating..." : "Generate Routine →"}
         </Button>
       </div>
     </form>
