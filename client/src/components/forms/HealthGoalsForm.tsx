@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -11,7 +11,8 @@ import {
   Moon, 
   Paintbrush, 
   ShieldCheck, 
-  Heart 
+  Heart,
+  CheckCircle2
 } from "lucide-react";
 
 type HealthGoalsFormProps = {
@@ -84,59 +85,55 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
           const isSelected = selectedGoals.includes(goal.id);
           
           return (
-            <div className="relative" key={goal.id}>
-              <input
-                type="checkbox"
-                id={`goal-${goal.id}`}
-                className="peer sr-only"
-                checked={isSelected}
-                onChange={() => toggleGoal(goal.id)}
+            <div 
+              key={goal.id}
+              onClick={() => toggleGoal(goal.id)}
+              className={`flex flex-col items-center justify-center p-4 rounded-lg cursor-pointer transition-all duration-300 relative h-full
+                ${isSelected 
+                  ? "border-2 border-primary-500 bg-primary-50 shadow-lg transform scale-[1.03]" 
+                  : "border-2 border-neutral-200 bg-white hover:border-primary-300 hover:bg-primary-50/30"
+                }
+                ${isSelected ? "pulse-animation" : ""}
+              `}
+            >
+              {isSelected && (
+                <>
+                  <div className="absolute top-0 left-0 w-full h-2 bg-primary-500 rounded-t-lg"></div>
+                  <div className="absolute inset-0 rounded-lg ring-2 ring-primary-300 ring-opacity-50 pointer-events-none"></div>
+                </>
+              )}
+                
+              {isSelected ? (
+                <div className="absolute top-2 right-2">
+                  <CheckCircle2 className="h-5 w-5 text-primary-500" />
+                </div>
+              ) : null}
+
+              <Icon
+                className={`h-8 w-8 mb-2 ${
+                  isSelected ? "text-primary-500" : "text-neutral-400"
+                }`}
               />
-              <label
-                htmlFor={`goal-${goal.id}`}
-                className={`flex flex-col items-center justify-center p-4 h-full rounded-lg cursor-pointer transition-all duration-300 relative ${
-                  isSelected
-                    ? "border-2 border-primary-500 bg-primary-50 shadow-lg transform scale-[1.03] pulse-animation"
-                    : "border-2 border-neutral-200 bg-white hover:border-primary-300 hover:bg-primary-50/30"
+              <span className="font-medium text-center mb-2">{goal.label}</span>
+              
+              <div 
+                className={`mt-1 text-sm px-3 py-1 rounded-full transition-all duration-200 flex items-center justify-center min-w-[80px] ${
+                  isSelected 
+                    ? "text-white bg-primary-500 shadow-sm" 
+                    : "text-primary-500 bg-white border border-primary-300"
                 }`}
               >
-                {isSelected && (
+                {isSelected ? (
                   <>
-                    <div className="absolute top-0 left-0 w-full h-2 bg-primary-500 rounded-t-lg"></div>
-                    <div className="absolute inset-0 rounded-lg ring-2 ring-primary-300 ring-opacity-50 pointer-events-none"></div>
+                    <svg className="w-3 h-3 mr-1" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    Selected
                   </>
+                ) : (
+                  "Select"
                 )}
-
-                <Icon
-                  className={`h-8 w-8 mb-2 ${
-                    isSelected ? "text-primary-500" : "text-neutral-400"
-                  }`}
-                />
-                <span className="font-medium text-center mb-2">{goal.label}</span>
-                <button 
-                  type="button"
-                  className={`mt-1 text-sm px-3 py-1 rounded-full transition-all duration-200 flex items-center justify-center min-w-[80px] ${
-                    isSelected 
-                      ? "text-white bg-primary-500 hover:bg-primary-600 shadow-sm" 
-                      : "text-primary-500 bg-white border border-primary-300 hover:bg-primary-50"
-                  }`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toggleGoal(goal.id);
-                  }}
-                >
-                  {isSelected ? (
-                    <>
-                      <svg className="w-3 h-3 mr-1" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      Selected
-                    </>
-                  ) : (
-                    "Select"
-                  )}
-                </button>
-              </label>
+              </div>
             </div>
           );
         })}
