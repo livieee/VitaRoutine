@@ -88,7 +88,7 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
             <div 
               key={goal.id}
               onClick={() => toggleGoal(goal.id)}
-              className={`flex flex-col items-center justify-center p-4 rounded-lg cursor-pointer transition-all duration-300 relative h-full
+              className={`flex flex-col items-center justify-center rounded-lg cursor-pointer transition-all duration-300 relative h-full
                 ${isSelected 
                   ? "border-2 border-primary-500 bg-primary-50 shadow-lg transform scale-[1.03]" 
                   : "border-2 border-neutral-200 bg-white hover:border-primary-300 hover:bg-primary-50/30"
@@ -109,30 +109,13 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
                 </div>
               ) : null}
 
-              <Icon
-                className={`h-8 w-8 mb-2 ${
-                  isSelected ? "text-primary-500" : "text-neutral-400"
-                }`}
-              />
-              <span className="font-medium text-center mb-2">{goal.label}</span>
-              
-              <div 
-                className={`mt-1 text-sm px-3 py-1 rounded-full transition-all duration-200 flex items-center justify-center min-w-[80px] ${
-                  isSelected 
-                    ? "text-white bg-primary-500 shadow-sm" 
-                    : "text-primary-500 bg-white border border-primary-300"
-                }`}
-              >
-                {isSelected ? (
-                  <>
-                    <svg className="w-3 h-3 mr-1" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    Selected
-                  </>
-                ) : (
-                  "Select"
-                )}
+              <div className="flex-1 flex flex-col items-center justify-center py-4">
+                <Icon
+                  className={`h-12 w-12 mb-3 transition-all duration-300 ${
+                    isSelected ? "text-primary-500 scale-110" : "text-neutral-400"
+                  }`}
+                />
+                <span className="font-medium text-center text-lg">{goal.label}</span>
               </div>
             </div>
           );
