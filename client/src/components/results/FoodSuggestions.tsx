@@ -1,5 +1,5 @@
 import { FoodSuggestion } from "@/lib/types";
-import { UtensilsCrossed, Coffee, Soup, Cookie } from "lucide-react";
+import { UtensilsCrossed, Coffee, Soup, Cookie, Utensils } from "lucide-react";
 
 type FoodSuggestionsProps = {
   foodSuggestions: FoodSuggestion;
@@ -42,10 +42,27 @@ export default function FoodSuggestions({ foodSuggestions }: FoodSuggestionsProp
             <div className="border border-neutral-100 rounded-lg p-4 hover:border-secondary-200 transition-all duration-200 interactive-card">
               <h5 className="font-medium mb-3 flex items-center text-secondary-700">
                 <Soup className="mr-2 h-4 w-4 text-secondary-500" />
-                Lunch & Dinner Options
+                Lunch Options
               </h5>
               <ul className="space-y-2 pl-2">
                 {foodSuggestions.lunch.map((item, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="inline-block w-4 h-4 mr-2 rounded-full bg-secondary-100 flex-shrink-0 mt-1"></span>
+                    <span className="text-neutral-700">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {foodSuggestions.dinner && foodSuggestions.dinner.length > 0 && (
+            <div className="border border-neutral-100 rounded-lg p-4 hover:border-secondary-200 transition-all duration-200 interactive-card">
+              <h5 className="font-medium mb-3 flex items-center text-secondary-700">
+                <Utensils className="mr-2 h-4 w-4 text-secondary-500" />
+                Dinner Options
+              </h5>
+              <ul className="space-y-2 pl-2">
+                {foodSuggestions.dinner.map((item, index) => (
                   <li key={index} className="flex items-start">
                     <span className="inline-block w-4 h-4 mr-2 rounded-full bg-secondary-100 flex-shrink-0 mt-1"></span>
                     <span className="text-neutral-700">{item}</span>

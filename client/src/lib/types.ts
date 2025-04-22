@@ -27,6 +27,7 @@ export interface FoodSuggestion {
   breakfast: string[];
   lunch: string[];
   snacks: string[];
+  dinner?: string[]; // Optional to maintain backward compatibility
 }
 
 export interface RecommendationResponse {
