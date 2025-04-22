@@ -26,7 +26,7 @@ export default function RoutineGenerator() {
     sleepTime: "23:00",
     sleepQuality: 3,
     stressLevel: 3,
-    menstrualPhase: "",
+    menstrualPhase: "not_applicable",
     dietPreference: "omnivore",
     foodAllergies: ""
   });

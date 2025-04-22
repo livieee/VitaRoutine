@@ -36,11 +36,14 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
   const { toast } = useToast();
 
   const toggleGoal = (goalId: string) => {
+    let newSelectedGoals;
     if (selectedGoals.includes(goalId)) {
-      setSelectedGoals(selectedGoals.filter(g => g !== goalId));
+      newSelectedGoals = selectedGoals.filter(g => g !== goalId);
     } else {
-      setSelectedGoals([...selectedGoals, goalId]);
+      newSelectedGoals = [...selectedGoals, goalId];
     }
+    setSelectedGoals(newSelectedGoals);
+    console.log("Selected goals:", newSelectedGoals);
   };
 
   const handleFormSubmit = (data: HealthGoalsFormData) => {
@@ -118,7 +121,7 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
       </div>
       
       <div className="flex justify-end">
-        <Button type="submit">
+        <Button type="submit" size="lg" className="text-lg font-medium">
           Continue
         </Button>
       </div>

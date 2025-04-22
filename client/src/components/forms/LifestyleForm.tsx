@@ -131,7 +131,7 @@ export default function LifestyleForm({
             <SelectValue placeholder="Not applicable" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Not applicable</SelectItem>
+            <SelectItem value="not_applicable">Not applicable</SelectItem>
             <SelectItem value="follicular">Follicular phase (day 1-14)</SelectItem>
             <SelectItem value="ovulation">Ovulation (day 14-16)</SelectItem>
             <SelectItem value="luteal">Luteal phase (day 16-28)</SelectItem>
@@ -186,7 +186,7 @@ export default function LifestyleForm({
         >
           Back
         </Button>
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} size="lg" className="text-lg font-medium">
           {isLoading ? "Generating..." : "Generate Routine"}
         </Button>
       </div>
