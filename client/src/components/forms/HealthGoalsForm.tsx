@@ -94,14 +94,17 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
               />
               <label
                 htmlFor={`goal-${goal.id}`}
-                className={`flex flex-col items-center justify-center p-4 h-full bg-white border-2 rounded-lg cursor-pointer interactive-card relative ${
+                className={`flex flex-col items-center justify-center p-4 h-full rounded-lg cursor-pointer transition-all duration-300 relative ${
                   isSelected
-                    ? "border-primary-500 bg-primary-50 shadow-lg transform scale-[1.02]"
-                    : "border-neutral-200 hover:border-primary-200"
-                } ${isSelected ? "pulse-animation" : ""}`}
+                    ? "border-2 border-primary-500 bg-primary-50 shadow-lg transform scale-[1.03] pulse-animation"
+                    : "border-2 border-neutral-200 bg-white hover:border-primary-300 hover:bg-primary-50/30"
+                }`}
               >
                 {isSelected && (
-                  <div className="absolute top-0 left-0 w-full h-1 bg-primary-500 rounded-t-lg"></div>
+                  <>
+                    <div className="absolute top-0 left-0 w-full h-2 bg-primary-500 rounded-t-lg"></div>
+                    <div className="absolute inset-0 rounded-lg ring-2 ring-primary-300 ring-opacity-50 pointer-events-none"></div>
+                  </>
                 )}
 
                 <Icon
