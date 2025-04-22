@@ -52,9 +52,12 @@ export default function CalendarSync({ supplementRoutine }: CalendarSyncProps) {
   };
 
   return (
-    <div className="border border-neutral-200 rounded-lg overflow-hidden">
-      <div className="bg-neutral-50 px-4 py-3 border-b border-neutral-200">
-        <h4 className="font-medium text-neutral-800">Sync to Calendar</h4>
+    <div className="border border-neutral-200 rounded-lg overflow-hidden mb-8 shadow-md transition-all duration-300 hover:shadow-lg content-section entered">
+      <div className="bg-gradient-to-r from-primary-50 via-neutral-50 to-neutral-100 px-4 py-3 border-b border-neutral-200">
+        <h4 className="font-medium text-neutral-800 flex items-center">
+          <Calendar className="mr-2 h-5 w-5 text-primary-500" />
+          Sync to Calendar
+        </h4>
       </div>
       
       <div className="p-4">
@@ -65,16 +68,15 @@ export default function CalendarSync({ supplementRoutine }: CalendarSyncProps) {
         <div className="flex flex-wrap gap-4">
           <Button
             variant="outline"
-            className="flex items-center"
+            className="flex items-center interactive-card hover:border-primary-300 hover:shadow-md px-6 py-5"
             onClick={handleExportICal}
           >
-            <Calendar className="h-5 w-5 mr-2" />
+            <Calendar className="h-5 w-5 mr-2 text-primary-500" />
             <span>Export iCal File</span>
           </Button>
           
           <Button
-            variant="outline"
-            className="flex items-center"
+            className="flex items-center button-gradient border-none shadow-lg px-6 py-5 text-white"
             onClick={handleAddToGoogleCalendar}
           >
             <svg
@@ -83,10 +85,10 @@ export default function CalendarSync({ supplementRoutine }: CalendarSyncProps) {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <rect x="5" y="5" width="14" height="2" fill="#EA4335" />
-              <rect x="5" y="9" width="14" height="2" fill="#FBBC04" />
-              <rect x="5" y="13" width="14" height="2" fill="#34A853" />
-              <rect x="5" y="17" width="14" height="2" fill="#4285F4" />
+              <rect x="5" y="5" width="14" height="2" fill="white" />
+              <rect x="5" y="9" width="14" height="2" fill="white" />
+              <rect x="5" y="13" width="14" height="2" fill="white" />
+              <rect x="5" y="17" width="14" height="2" fill="white" />
             </svg>
             <span>Add to Google Calendar</span>
           </Button>
