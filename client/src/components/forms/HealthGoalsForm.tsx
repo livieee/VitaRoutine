@@ -60,7 +60,8 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="form-step">
-      <h3 className="text-xl font-semibold mb-6">What are your health goals?</h3>
+      <h3 className="text-xl font-semibold mb-2">What are your health goals?</h3>
+      <p className="text-neutral-600 mb-6">Select all that apply. You can choose multiple options.</p>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         {HEALTH_GOALS.map((goal) => {
@@ -78,12 +79,19 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
               />
               <label
                 htmlFor={`goal-${goal.id}`}
-                className={`flex flex-col items-center justify-center p-4 h-full bg-white border-2 rounded-lg cursor-pointer transition-all hover:bg-neutral-50 ${
+                className={`flex flex-col items-center justify-center p-4 h-full bg-white border-2 rounded-lg cursor-pointer transition-all hover:bg-neutral-50 relative ${
                   isSelected
                     ? "border-primary-500 bg-primary-50"
                     : "border-neutral-200"
                 }`}
               >
+                {isSelected && (
+                  <div className="absolute top-2 right-2 h-5 w-5 bg-primary-500 rounded-full flex items-center justify-center">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                )}
                 <Icon
                   className={`h-8 w-8 mb-2 ${
                     isSelected ? "text-primary-500" : "text-neutral-400"
