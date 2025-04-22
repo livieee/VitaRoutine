@@ -100,42 +100,36 @@ export default function HealthGoalsForm({ onSubmit, defaultValues }: HealthGoals
                     : "border-neutral-200"
                 } ${isSelected ? "pulse-animation" : ""}`}
               >
-                {isSelected && (
-                  <div className="absolute top-2 right-2 h-5 w-5 bg-primary-500 rounded-full flex items-center justify-center">
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                )}
+
                 <Icon
                   className={`h-8 w-8 mb-2 ${
                     isSelected ? "text-primary-500" : "text-neutral-400"
                   }`}
                 />
                 <span className="font-medium text-center mb-2">{goal.label}</span>
-                {isSelected ? (
-                  <button 
-                    type="button"
-                    className="mt-1 text-sm text-white bg-primary-500 px-3 py-1 rounded-full hover:bg-primary-600 focus:outline-none"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleGoal(goal.id);
-                    }}
-                  >
-                    Selected
-                  </button>
-                ) : (
-                  <button 
-                    type="button"
-                    className="mt-1 text-sm text-primary-500 bg-white border border-primary-300 px-3 py-1 rounded-full hover:bg-primary-50 focus:outline-none"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleGoal(goal.id);
-                    }}
-                  >
-                    Select
-                  </button>
-                )}
+                <button 
+                  type="button"
+                  className={`mt-1 text-sm px-3 py-1 rounded-full transition-all duration-200 flex items-center justify-center min-w-[80px] ${
+                    isSelected 
+                      ? "text-white bg-primary-500 hover:bg-primary-600 shadow-sm" 
+                      : "text-primary-500 bg-white border border-primary-300 hover:bg-primary-50"
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleGoal(goal.id);
+                  }}
+                >
+                  {isSelected ? (
+                    <>
+                      <svg className="w-3 h-3 mr-1" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Selected
+                    </>
+                  ) : (
+                    "Select"
+                  )}
+                </button>
               </label>
             </div>
           );
