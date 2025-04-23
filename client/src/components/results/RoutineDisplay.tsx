@@ -46,7 +46,7 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
       setIsSaved(true);
       toast({
         title: "Success!",
-        description: "Your supplement routine has been saved.",
+        description: "Routine saved! Come back anytime to check or update it.",
         duration: 3000,
       });
     } catch (error) {
