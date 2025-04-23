@@ -240,15 +240,37 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
               
               {/* Removed Items Notification */}
               {Object.keys(removedItems).length > 0 && (
-                <div className="bg-red-50 border border-red-100 rounded-md p-3 mt-2 mb-2 flex items-start">
-                  <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm text-red-700">
-                      <span className="font-medium">Note:</span> You've removed {Object.keys(removedItems).length} supplement{Object.keys(removedItems).length !== 1 ? 's' : ''} from your routine.
-                    </p>
-                    <p className="text-xs text-red-600 mt-1">
-                      Removed supplements won't appear in your saved routine. You can generate a new routine to restore all supplements.
-                    </p>
+                <div className="bg-red-50 border border-red-100 rounded-md p-3 mt-2 mb-2">
+                  <div className="flex items-start">
+                    <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-red-700">
+                        <span className="font-medium">Note:</span> You've removed {Object.keys(removedItems).length} supplement{Object.keys(removedItems).length !== 1 ? 's' : ''} from your routine.
+                      </p>
+                      <p className="text-xs text-red-600 mt-1">
+                        Removed supplements won't appear in your saved routine. 
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex justify-end mt-2">
+                    <button
+                      onClick={() => {
+                        // Clear removed items
+                        setRemovedItems({});
+                        // Clear from localStorage if it exists
+                        localStorage.removeItem("vitaRemovedItems");
+                        setIsSaved(false);
+                        toast({
+                          title: "Supplements Restored",
+                          description: "All supplements have been restored to your routine.",
+                          duration: 3000,
+                        });
+                      }}
+                      className="flex items-center px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-md text-xs font-medium transition-all duration-150"
+                    >
+                      <RefreshCw className="h-3 w-3 mr-1" />
+                      Restore All Supplements
+                    </button>
                   </div>
                 </div>
               )}
