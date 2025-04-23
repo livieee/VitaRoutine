@@ -159,7 +159,10 @@ export default function AskAIModal({ isOpen, onClose, supplement, healthGoals }:
     }
     
     if (q.includes("benefit") || q.includes("good for") || q.includes("why")) {
-      return `${name} supports your ${healthGoals.join(" and ")} goals by: ${supplement.reasoning}`;
+      const reasoning = typeof supplement.reasoning === 'string' 
+        ? supplement.reasoning 
+        : "supporting your overall health goals";
+      return `${name} supports your ${healthGoals.join(" and ")} goals by: ${reasoning}`;
     }
     
     if (q.includes("alternative") || q.includes("substitute") || q.includes("instead")) {
@@ -173,7 +176,12 @@ export default function AskAIModal({ isOpen, onClose, supplement, healthGoals }:
     }
     
     // Default response for other questions
-    return `Thanks for asking about ${name}! Based on your health goals (${healthGoals.join(", ")}), ${name} was recommended because ${supplement.reasoning.split('.')[0]}. The suggested dosage is ${dosage}, to be taken during ${supplement.timeOfDay} (${supplement.time}). ${supplement.instructions} Is there something more specific you'd like to know?`;
+    // Make sure reasoning is a string and get the first sentence
+    const firstSentence = typeof supplement.reasoning === 'string' 
+      ? supplement.reasoning.split('.')[0]
+      : "it supports your health goals";
+    
+    return `Thanks for asking about ${name}! Based on your health goals (${healthGoals.join(", ")}), ${name} was recommended because ${firstSentence}. The suggested dosage is ${dosage}, to be taken during ${supplement.timeOfDay} (${supplement.time}). ${supplement.instructions} Is there something more specific you'd like to know?`;
   };
   
   // Helper function to provide realistic alternatives based on supplement name
