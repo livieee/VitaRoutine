@@ -62,10 +62,10 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
   };
 
   // Toggle card expansion
-  const toggleCardExpansion = (cardId: string) => {
+  const toggleCardExpansion = (cardId: string | number) => {
     setExpandedCards(prev => ({
       ...prev,
-      [cardId]: !prev[cardId]
+      [cardId.toString()]: !prev[cardId.toString()]
     }));
   };
 
@@ -113,15 +113,15 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
   const getTimeOfDayIcon = (timeOfDay: string) => {
     switch(timeOfDay) {
       case "Morning":
-        return <Sun className="h-5 w-5" />;
+        return <Sun className="h-5 w-5 text-amber-600" />;
       case "Midday":
-        return <Coffee className="h-5 w-5" />;
+        return <Coffee className="h-5 w-5 text-blue-600" />;
       case "Evening":
-        return <Sunset className="h-5 w-5" />;
+        return <Sunset className="h-5 w-5 text-purple-600" />;
       case "Night":
-        return <Moon className="h-5 w-5" />;
+        return <Moon className="h-5 w-5 text-indigo-600" />;
       default:
-        return <Clock className="h-5 w-5" />;
+        return <Clock className="h-5 w-5 text-gray-600" />;
     }
   };
 
@@ -320,47 +320,13 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                                 <div className="grid md:grid-cols-2 gap-4">
                                   {/* Left Column - Usage & Brand */}
                                   <div className="space-y-4">
-                                    {/* Usage Guide - Combines instructions and food pairing */}
+                                    {/* Usage Guide - Instructions with food context */}
                                     <div className="bg-white p-3 rounded-md border border-neutral-200">
                                       <div className="flex items-center mb-2">
                                         <ScrollText className="h-4 w-4 mr-2 text-neutral-500" />
                                         <h6 className="font-medium text-neutral-800">Usage Guide</h6>
                                       </div>
-                                      
-                                      {/* Simplified instructions */}
-                                      <div className="space-y-2">
-                                        <div className="flex items-start">
-                                          <div className="bg-neutral-100 p-1 rounded-full mr-2 mt-0.5">
-                                            <Clock className="h-3 w-3 text-neutral-600" />
-                                          </div>
-                                          <p className="text-sm text-neutral-700 flex-1">
-                                            {getQuickInstruction(item.instructions)}
-                                          </p>
-                                        </div>
-                                        
-                                        {/* Food pairing if available */}
-                                        {foodPairing && (
-                                          <div className="flex items-start">
-                                            <div className="bg-green-100 p-1 rounded-full mr-2 mt-0.5">
-                                              <Utensils className="h-3 w-3 text-green-600" />
-                                            </div>
-                                            <div className="flex-1">
-                                              <p className="text-sm font-medium text-green-700 mb-1">Food Ideas:</p>
-                                              <div className="text-sm text-neutral-700 pl-1">
-                                                {foodPairing.includes(',') ? (
-                                                  <ul className="space-y-1 list-disc pl-4">
-                                                    {foodPairing.split(',').map((food, i) => (
-                                                      <li key={i}>{food.trim()}</li>
-                                                    ))}
-                                                  </ul>
-                                                ) : (
-                                                  <p>{foodPairing}</p>
-                                                )}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        )}
-                                      </div>
+                                      <p className="text-sm text-neutral-700">{item.instructions}</p>
                                     </div>
                                     
                                     {/* Brand Recommendation */}
