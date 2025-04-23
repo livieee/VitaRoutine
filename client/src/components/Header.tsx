@@ -4,10 +4,10 @@ export default function Header() {
   return (
     <header className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2">
           {/* Empty Blue Heart Logo */}
-          <div className="relative h-7 w-7 flex items-center justify-center">
-            <Heart className="h-7 w-7 text-blue-500 stroke-2" />
+          <div className="flex items-end">
+            <Heart className="h-6 w-6 text-blue-500 stroke-2 mb-0.5" />
           </div>
           <div>
             <h1 className="text-xl font-semibold text-neutral-800">
