@@ -1,5 +1,8 @@
 import { FoodSuggestion } from "@/lib/types";
-import { UtensilsCrossed, Coffee, Soup, Cookie, Utensils, CircleDot } from "lucide-react";
+import { UtensilsCrossed, Coffee, Soup, Cookie, Utensils, CheckCircle2 } from "lucide-react";
+
+// Use CheckCircle2 as a replacement for CircleDot since CircleDot is not available in the current lucide-react version
+const CircleDot = CheckCircle2;
 
 type FoodSuggestionsProps = {
   foodSuggestions: FoodSuggestion;
@@ -132,13 +135,31 @@ export default function FoodSuggestions({ foodSuggestions }: FoodSuggestionsProp
                 <Cookie className="mr-2 h-4 w-4 text-secondary-500" />
                 Snack Options
               </h5>
-              <ul className="space-y-2 pl-2">
-                {foodSuggestions.snacks.map((item, index) => (
-                  <li key={index} className="flex items-start">
-                    <span className="inline-block w-4 h-4 mr-2 rounded-full bg-secondary-100 flex-shrink-0 mt-1"></span>
-                    <span className="text-neutral-700">{item}</span>
-                  </li>
-                ))}
+              <ul className="space-y-3 pl-2">
+                {foodSuggestions.snacks.map((item, index) => {
+                  // Parse food item to highlight nutrients or benefits if they exist in parentheses
+                  const matches = item.match(/(.*?)(\(.*?\))(.*)/);
+                  
+                  if (matches) {
+                    return (
+                      <li key={index} className="flex items-start">
+                        <CircleDot className="h-4 w-4 mr-2 text-secondary-400 flex-shrink-0 mt-1" />
+                        <div>
+                          <span className="text-neutral-800 font-medium">{matches[1].trim()} </span>
+                          <span className="text-secondary-600 font-medium">{matches[2]}</span>
+                          <span className="text-neutral-700">{matches[3]}</span>
+                        </div>
+                      </li>
+                    );
+                  }
+                  
+                  return (
+                    <li key={index} className="flex items-start">
+                      <CircleDot className="h-4 w-4 mr-2 text-secondary-400 flex-shrink-0 mt-1" />
+                      <span className="text-neutral-700">{item}</span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}
