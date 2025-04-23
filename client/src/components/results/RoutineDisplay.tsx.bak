@@ -1,0 +1,423 @@
+import { useState, useEffect } from "react";
+import { 
+  Clock, Star, ScrollText, Pill, ChevronDown, ChevronUp, 
+  Utensils, RefreshCw, X, MessageSquareText, ShoppingBag,
+  HeartPulse, Award, CircleCheck, Save, Check, Sun, 
+  Coffee, Sunset, Moon, HelpCircle, Info
+} from "lucide-react";
+import { SupplementRoutineItem } from "@/lib/types";
+import { useToast } from "@/hooks/use-toast";
+
+type RoutineDisplayProps = {
+  supplementRoutine: SupplementRoutineItem[];
+};
+
+export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProps) {
+  // Get toast hook for notifications
+  const { toast } = useToast();
+  
+  // State to track which supplement cards are expanded
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+  
+  // State to track if the routine is already saved
+  const [isSaved, setIsSaved] = useState<boolean>(false);
+  
+  // Check if routine exists in localStorage on component mount
+  useEffect(() => {
+    const savedRoutine = localStorage.getItem("vitaRoutine");
+    if (savedRoutine) {
+      try {
+        const parsedRoutine = JSON.parse(savedRoutine);
+        // A simple check to see if what's saved matches the current routine
+        if (parsedRoutine && 
+            Array.isArray(parsedRoutine) && 
+            parsedRoutine.length === supplementRoutine.length) {
+          setIsSaved(true);
+        }
+      } catch (error) {
+        console.error("Error parsing saved routine:", error);
+      }
+    }
+  }, [supplementRoutine]);
+  
+  // Function to save routine to localStorage
+  const saveRoutine = () => {
+    try {
+      localStorage.setItem("vitaRoutine", JSON.stringify(supplementRoutine));
+      setIsSaved(true);
+      toast({
+        title: "Success!",
+        description: "Your supplement routine has been saved.",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error saving routine:", error);
+      toast({
+        title: "Error",
+        description: "Could not save your routine. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+      });
+    }
+  };
+
+  // Toggle card expansion
+  const toggleCardExpansion = (cardId: string) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [cardId]: !prev[cardId]
+    }));
+  };
+
+  // Get time of day color
+  const getTimeOfDayColor = (timeOfDay: string) => {
+    return timeOfDay === "Morning"
+      ? "primary"
+      : timeOfDay === "Midday"
+      ? "secondary"
+      : "neutral";
+  };
+
+  // Function to extract a quick instruction from the full instructions
+  const getQuickInstruction = (instructions: string): string => {
+    // Try to find patterns like "Take with..." or "Take on..."
+    const takeWithMatch = instructions.match(/take with ([^.]+)/i);
+    const takeOnMatch = instructions.match(/take on ([^.]+)/i);
+    const takeBeforeMatch = instructions.match(/take before ([^.]+)/i);
+    const takeAfterMatch = instructions.match(/take after ([^.]+)/i);
+    
+    if (takeWithMatch) return `Take with ${takeWithMatch[1]}`;
+    if (takeOnMatch) return `Take on ${takeOnMatch[1]}`;
+    if (takeBeforeMatch) return `Take before ${takeBeforeMatch[1]}`;
+    if (takeAfterMatch) return `Take after ${takeAfterMatch[1]}`;
+    
+    // If no match, take first sentence or truncate
+    const firstSentence = instructions.split('.')[0];
+    return firstSentence.length > 40 ? `${firstSentence.substring(0, 37)}...` : firstSentence;
+  };
+  
+  // Format the food pairing from instructions if available
+  const getFoodPairing = (instructions: string): string | null => {
+    const foodPairingMatch = instructions.match(/(?:take|pair|consume) with ([^.]+)/i);
+    return foodPairingMatch ? foodPairingMatch[1].trim() : null;
+  };
+
+  const sortedSupplements = supplementRoutine
+    .slice()
+    .sort((a, b) => {
+      const timeOrder = {"Morning": 1, "Midday": 2, "Evening": 3, "Night": 4};
+      return timeOrder[a.timeOfDay as keyof typeof timeOrder] - timeOrder[b.timeOfDay as keyof typeof timeOrder];
+    });
+    
+  // Group supplements by time of day
+  const groupedSupplements = sortedSupplements.reduce((acc, item) => {
+    if (!acc[item.timeOfDay]) {
+      acc[item.timeOfDay] = [];
+    }
+    acc[item.timeOfDay].push(item);
+    return acc;
+  }, {} as Record<string, SupplementRoutineItem[]>);
+
+  // Get time of day icon
+  const getTimeOfDayIcon = (timeOfDay: string) => {
+    switch(timeOfDay) {
+      case "Morning":
+        return <Sun className="h-5 w-5" />;
+      case "Midday":
+        return <Coffee className="h-5 w-5" />;
+      case "Evening":
+        return <Sunset className="h-5 w-5" />;
+      case "Night":
+        return <Moon className="h-5 w-5" />;
+      default:
+        return <Clock className="h-5 w-5" />;
+    }
+  };
+
+  // Extract dosage from supplement name if available
+  const getDosage = (supplement: string): string | null => {
+    const dosageMatch = supplement.match(/\(([^)]+)\)/);
+    return dosageMatch ? dosageMatch[1] : null;
+  };
+
+  // Clean supplement name by removing dosage
+  const getCleanName = (supplement: string): string => {
+    return supplement.replace(/\s*\([^)]*\)/, '').trim();
+  };
+
+  return (
+    <div className="border border-neutral-200 rounded-lg overflow-hidden mb-8 shadow-md transition-all duration-300 hover:shadow-lg content-section entered">
+      <div className="bg-gradient-to-r from-primary-50 to-primary-100 px-4 py-3 border-b border-primary-100">
+        <h4 className="font-medium text-primary-800 flex items-center">
+          <Clock className="mr-2 h-5 w-5 text-primary-500" />
+          Your Daily Supplement Plan
+        </h4>
+      </div>
+      
+      <div className="p-4">
+        {supplementRoutine.length === 0 ? (
+          <p className="text-neutral-600 text-center py-4">
+            No supplement routine available.
+          </p>
+        ) : (
+          <div className="space-y-6">
+            <div className="bg-primary-50 p-4 rounded-lg border border-primary-100">
+              <div className="flex flex-wrap items-center justify-between mb-3">
+                <h5 className="text-primary-800 font-medium">Your Personalized Supplement Routine</h5>
+                
+                {/* Save Routine Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    saveRoutine();
+                  }}
+                  className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-150 ${
+                    isSaved
+                      ? "bg-green-100 text-green-700"
+                      : "bg-primary-100 hover:bg-primary-200 text-primary-700"
+                  }`}
+                  disabled={isSaved}
+                >
+                  {isSaved ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      <span>Saved!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      <span>💾 Save My Routine</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <p className="text-neutral-700 mb-3">Here's your science-backed supplement plan tailored to your needs. Click on any supplement for details!</p>
+            </div>
+
+            {/* Timeline View */}
+            <div className="space-y-3">
+              {sortedSupplements.map((item, index) => {
+                const colorTheme = getTimeOfDayColor(item.timeOfDay);
+                const isExpanded = expandedCards[index] || false;
+                const quickInstruction = getQuickInstruction(item.instructions);
+                const foodPairing = getFoodPairing(item.instructions);
+                
+                return (
+                  <div 
+                    key={index} 
+                    className={`border rounded-lg transition-all duration-300 overflow-hidden ${
+                      isExpanded 
+                        ? colorTheme === "primary" 
+                          ? "border-primary-300 shadow-md" 
+                          : colorTheme === "secondary" 
+                            ? "border-secondary-300 shadow-md" 
+                            : "border-neutral-300 shadow-md"
+                        : "border-neutral-200 hover:border-neutral-300"
+                    }`}
+                  >
+                    {/* Card Header - Always visible */}
+                    <div 
+                      className={`p-4 ${
+                        isExpanded 
+                          ? colorTheme === "primary" 
+                            ? "bg-primary-50" 
+                            : colorTheme === "secondary" 
+                              ? "bg-secondary-50" 
+                              : "bg-neutral-50"
+                          : "bg-white"
+                      } cursor-pointer`}
+                      onClick={() => toggleCardExpansion(index)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-start gap-3">
+                          {/* Time & Dot Indicator */}
+                          <div className="flex flex-col items-center">
+                            <div className={`w-3 h-3 rounded-full ${
+                              colorTheme === "primary" 
+                                ? "bg-primary-500" 
+                                : colorTheme === "secondary" 
+                                  ? "bg-secondary-500" 
+                                  : "bg-neutral-500"
+                            } mb-1`}></div>
+                            <span className={`text-xs font-medium ${
+                              colorTheme === "primary" 
+                                ? "text-primary-700" 
+                                : colorTheme === "secondary" 
+                                  ? "text-secondary-700" 
+                                  : "text-neutral-700"
+                            }`}>{item.time}</span>
+                            <span className="text-xs text-neutral-500">{item.timeOfDay}</span>
+                          </div>
+                          
+                          {/* Supplement Info */}
+                          <div>
+                            <h5 className={`font-medium text-lg ${
+                              colorTheme === "primary" 
+                                ? "text-primary-800" 
+                                : colorTheme === "secondary" 
+                                  ? "text-secondary-800" 
+                                  : "text-neutral-800"
+                            }`}>{item.supplement}</h5>
+                            <p className="text-sm text-neutral-600 mt-1">{quickInstruction}</p>
+                          </div>
+                        </div>
+                        
+                        {/* Expand/Collapse Icon */}
+                        <div className="flex items-center">
+                          <Pill className={`h-5 w-5 mr-2 ${
+                            colorTheme === "primary" 
+                              ? "text-primary-500" 
+                              : colorTheme === "secondary" 
+                                ? "text-secondary-500" 
+                                : "text-neutral-500"
+                          }`} />
+                          {isExpanded ? (
+                            <ChevronUp className="h-5 w-5 text-neutral-400" />
+                          ) : (
+                            <ChevronDown className="h-5 w-5 text-neutral-400" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Expanded Content */}
+                    {isExpanded && (
+                      <div className="p-4 border-t border-neutral-100 bg-white">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          {/* Left Column */}
+                          <div className="space-y-4">
+                            {/* Brand Recommendation */}
+                            {item.brand && (
+                              <div className="bg-amber-50 p-3 rounded-md border border-amber-100">
+                                <div className="flex items-center mb-2">
+                                  <ShoppingBag className="h-4 w-4 mr-2 text-amber-500" />
+                                  <h6 className="font-medium text-amber-800">Recommended Brand</h6>
+                                </div>
+                                <p className="text-sm text-amber-800">{item.brand}</p>
+                              </div>
+                            )}
+                            
+                            {/* Instructions */}
+                            <div className={`p-3 rounded-md border ${
+                              colorTheme === "primary" 
+                                ? "bg-primary-50 border-primary-100" 
+                                : colorTheme === "secondary" 
+                                  ? "bg-secondary-50 border-secondary-100" 
+                                  : "bg-neutral-50 border-neutral-100"
+                            }`}>
+                              <div className="flex items-center mb-2">
+                                <ScrollText className={`h-4 w-4 mr-2 ${
+                                  colorTheme === "primary" 
+                                    ? "text-primary-500" 
+                                    : colorTheme === "secondary" 
+                                      ? "text-secondary-500" 
+                                      : "text-neutral-500"
+                                }`} />
+                                <h6 className={`font-medium ${
+                                  colorTheme === "primary" 
+                                    ? "text-primary-800" 
+                                    : colorTheme === "secondary" 
+                                      ? "text-secondary-800" 
+                                      : "text-neutral-800"
+                                }`}>Instructions</h6>
+                              </div>
+                              <p className="text-sm text-neutral-700">{item.instructions}</p>
+                            </div>
+                            
+                            {/* Food Pairing */}
+                            {foodPairing && (
+                              <div className="bg-green-50 p-3 rounded-md border border-green-100">
+                                <div className="flex items-center mb-2">
+                                  <Utensils className="h-4 w-4 mr-2 text-green-500" />
+                                  <h6 className="font-medium text-green-800">Food Pairing</h6>
+                                </div>
+                                <p className="text-sm text-green-800">{foodPairing}</p>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Right Column - Benefits */}
+                          <div className="bg-white p-3 rounded-md border border-neutral-200">
+                            <div className="flex items-center mb-2">
+                              <HeartPulse className={`h-4 w-4 mr-2 ${
+                                colorTheme === "primary" 
+                                  ? "text-primary-500" 
+                                  : colorTheme === "secondary" 
+                                    ? "text-secondary-500" 
+                                    : "text-neutral-500"
+                              }`} />
+                              <h6 className={`font-medium ${
+                                colorTheme === "primary" 
+                                  ? "text-primary-800" 
+                                  : colorTheme === "secondary" 
+                                    ? "text-secondary-800" 
+                                    : "text-neutral-800"
+                              }`}>Benefits & Scientific Reasoning</h6>
+                            </div>
+                            
+                            {/* Check if reasoning has bullet points */}
+                            {item.reasoning.includes("- ") || item.reasoning.includes("• ") ? (
+                              <ul className="text-sm text-neutral-700 space-y-1 list-disc pl-4">
+                                {item.reasoning.split(/\n/).map((point: string, i: number) => {
+                                  const cleanPoint = point.replace(/^[-•]\s+/, "").trim();
+                                  return cleanPoint ? (
+                                    <li key={i} className="text-sm">{cleanPoint}</li>
+                                  ) : null;
+                                })}
+                              </ul>
+                            ) : (
+                              <p className="text-sm text-neutral-700">{item.reasoning}</p>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {/* Action Buttons */}
+                        <div className="flex flex-wrap gap-2 mt-4 border-t border-neutral-100 pt-4">
+                          {/* Swap Button */}
+                          <button 
+                            className="flex items-center px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-md text-sm transition-all duration-150"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              alert(`Swap feature for "${item.supplement}" coming soon!`);
+                            }}
+                          >
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            <span>Swap</span>
+                          </button>
+                          
+                          {/* Remove Button */}
+                          <button 
+                            className="flex items-center px-3 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-md text-sm transition-all duration-150"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              alert(`Remove feature for "${item.supplement}" coming soon!`);
+                            }}
+                          >
+                            <X className="h-4 w-4 mr-2" />
+                            <span>Remove</span>
+                          </button>
+                          
+                          {/* Ask AI Button */}
+                          <button 
+                            className="flex items-center px-3 py-2 bg-violet-50 hover:bg-violet-100 text-violet-700 rounded-md text-sm transition-all duration-150"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              alert(`AI consultation for "${item.supplement}" coming soon!`);
+                            }}
+                          >
+                            <MessageSquareText className="h-4 w-4 mr-2" />
+                            <span>Ask AI</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

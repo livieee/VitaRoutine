@@ -69,15 +69,6 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
     }));
   };
 
-  // Get time of day color
-  const getTimeOfDayColor = (timeOfDay: string) => {
-    return timeOfDay === "Morning"
-      ? "primary"
-      : timeOfDay === "Midday"
-      ? "secondary"
-      : "neutral";
-  };
-
   // Function to extract a quick instruction from the full instructions
   const getQuickInstruction = (instructions: string): string => {
     // Try to find patterns like "Take with..." or "Take on..."
@@ -194,226 +185,234 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
               <p className="text-neutral-700 mb-3">Here's your science-backed supplement plan tailored to your needs. Click on any supplement for details!</p>
             </div>
 
-            {/* Timeline View */}
-            <div className="space-y-3">
-              {sortedSupplements.map((item, index) => {
-                const colorTheme = getTimeOfDayColor(item.timeOfDay);
-                const isExpanded = expandedCards[index] || false;
-                const quickInstruction = getQuickInstruction(item.instructions);
-                const foodPairing = getFoodPairing(item.instructions);
+            {/* Enhanced Time-of-Day Grouping */}
+            <div className="space-y-6">
+              {Object.keys(groupedSupplements).map((timeOfDay) => {
+                const timeItems = groupedSupplements[timeOfDay];
+                const firstItem = timeItems[0];
+                let bgColor, textColor, borderColor, lightBgColor;
+                
+                switch(timeOfDay) {
+                  case "Morning":
+                    bgColor = "bg-amber-500";
+                    textColor = "text-amber-800";
+                    borderColor = "border-amber-200";
+                    lightBgColor = "bg-amber-50";
+                    break;
+                  case "Midday":
+                    bgColor = "bg-blue-500";
+                    textColor = "text-blue-800";
+                    borderColor = "border-blue-200";
+                    lightBgColor = "bg-blue-50";
+                    break;
+                  case "Evening":
+                    bgColor = "bg-purple-500";
+                    textColor = "text-purple-800";
+                    borderColor = "border-purple-200";
+                    lightBgColor = "bg-purple-50";
+                    break;
+                  case "Night":
+                    bgColor = "bg-indigo-500";
+                    textColor = "text-indigo-800";
+                    borderColor = "border-indigo-200";
+                    lightBgColor = "bg-indigo-50";
+                    break;
+                  default:
+                    bgColor = "bg-gray-500";
+                    textColor = "text-gray-800";
+                    borderColor = "border-gray-200";
+                    lightBgColor = "bg-gray-50";
+                }
                 
                 return (
-                  <div 
-                    key={index} 
-                    className={`border rounded-lg transition-all duration-300 overflow-hidden ${
-                      isExpanded 
-                        ? colorTheme === "primary" 
-                          ? "border-primary-300 shadow-md" 
-                          : colorTheme === "secondary" 
-                            ? "border-secondary-300 shadow-md" 
-                            : "border-neutral-300 shadow-md"
-                        : "border-neutral-200 hover:border-neutral-300"
-                    }`}
-                  >
-                    {/* Card Header - Always visible */}
-                    <div 
-                      className={`p-4 ${
-                        isExpanded 
-                          ? colorTheme === "primary" 
-                            ? "bg-primary-50" 
-                            : colorTheme === "secondary" 
-                              ? "bg-secondary-50" 
-                              : "bg-neutral-50"
-                          : "bg-white"
-                      } cursor-pointer`}
-                      onClick={() => toggleCardExpansion(index)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-start gap-3">
-                          {/* Time & Dot Indicator */}
-                          <div className="flex flex-col items-center">
-                            <div className={`w-3 h-3 rounded-full ${
-                              colorTheme === "primary" 
-                                ? "bg-primary-500" 
-                                : colorTheme === "secondary" 
-                                  ? "bg-secondary-500" 
-                                  : "bg-neutral-500"
-                            } mb-1`}></div>
-                            <span className={`text-xs font-medium ${
-                              colorTheme === "primary" 
-                                ? "text-primary-700" 
-                                : colorTheme === "secondary" 
-                                  ? "text-secondary-700" 
-                                  : "text-neutral-700"
-                            }`}>{item.time}</span>
-                            <span className="text-xs text-neutral-500">{item.timeOfDay}</span>
-                          </div>
-                          
-                          {/* Supplement Info */}
-                          <div>
-                            <h5 className={`font-medium text-lg ${
-                              colorTheme === "primary" 
-                                ? "text-primary-800" 
-                                : colorTheme === "secondary" 
-                                  ? "text-secondary-800" 
-                                  : "text-neutral-800"
-                            }`}>{item.supplement}</h5>
-                            <p className="text-sm text-neutral-600 mt-1">{quickInstruction}</p>
-                          </div>
+                  <div key={timeOfDay} className={`border rounded-lg overflow-hidden shadow-sm ${borderColor}`}>
+                    {/* Time of Day Header */}
+                    <div className={`px-4 py-3 flex items-center justify-between ${lightBgColor}`}>
+                      <div className="flex items-center">
+                        <div className={`p-2 rounded-full mr-3 ${bgColor} bg-opacity-20`}>
+                          {getTimeOfDayIcon(timeOfDay)}
                         </div>
-                        
-                        {/* Expand/Collapse Icon */}
-                        <div className="flex items-center">
-                          <Pill className={`h-5 w-5 mr-2 ${
-                            colorTheme === "primary" 
-                              ? "text-primary-500" 
-                              : colorTheme === "secondary" 
-                                ? "text-secondary-500" 
-                                : "text-neutral-500"
-                          }`} />
-                          {isExpanded ? (
-                            <ChevronUp className="h-5 w-5 text-neutral-400" />
-                          ) : (
-                            <ChevronDown className="h-5 w-5 text-neutral-400" />
-                          )}
+                        <div>
+                          <h3 className={`font-medium text-lg ${textColor}`}>
+                            {timeOfDay === "Morning" ? "☀️ Morning" : 
+                             timeOfDay === "Midday" ? "🍽️ Midday" : 
+                             timeOfDay === "Evening" ? "🌙 Evening" : 
+                             timeOfDay === "Night" ? "💤 Night" : timeOfDay}
+                          </h3>
+                          <p className="text-neutral-500 text-sm">{firstItem.time}</p>
                         </div>
                       </div>
                     </div>
                     
-                    {/* Expanded Content */}
-                    {isExpanded && (
-                      <div className="p-4 border-t border-neutral-100 bg-white">
-                        <div className="grid md:grid-cols-2 gap-4">
-                          {/* Left Column */}
-                          <div className="space-y-4">
-                            {/* Brand Recommendation */}
-                            {item.brand && (
-                              <div className="bg-amber-50 p-3 rounded-md border border-amber-100">
-                                <div className="flex items-center mb-2">
-                                  <ShoppingBag className="h-4 w-4 mr-2 text-amber-500" />
-                                  <h6 className="font-medium text-amber-800">Recommended Brand</h6>
-                                </div>
-                                <p className="text-sm text-amber-800">{item.brand}</p>
-                              </div>
-                            )}
-                            
-                            {/* Instructions */}
-                            <div className={`p-3 rounded-md border ${
-                              colorTheme === "primary" 
-                                ? "bg-primary-50 border-primary-100" 
-                                : colorTheme === "secondary" 
-                                  ? "bg-secondary-50 border-secondary-100" 
-                                  : "bg-neutral-50 border-neutral-100"
-                            }`}>
-                              <div className="flex items-center mb-2">
-                                <ScrollText className={`h-4 w-4 mr-2 ${
-                                  colorTheme === "primary" 
-                                    ? "text-primary-500" 
-                                    : colorTheme === "secondary" 
-                                      ? "text-secondary-500" 
-                                      : "text-neutral-500"
-                                }`} />
-                                <h6 className={`font-medium ${
-                                  colorTheme === "primary" 
-                                    ? "text-primary-800" 
-                                    : colorTheme === "secondary" 
-                                      ? "text-secondary-800" 
-                                      : "text-neutral-800"
-                                }`}>Instructions</h6>
-                              </div>
-                              <p className="text-sm text-neutral-700">{item.instructions}</p>
-                            </div>
-                            
-                            {/* Food Pairing */}
-                            {foodPairing && (
-                              <div className="bg-green-50 p-3 rounded-md border border-green-100">
-                                <div className="flex items-center mb-2">
-                                  <Utensils className="h-4 w-4 mr-2 text-green-500" />
-                                  <h6 className="font-medium text-green-800">Food Pairing</h6>
-                                </div>
-                                <p className="text-sm text-green-800">{foodPairing}</p>
-                              </div>
-                            )}
-                          </div>
-                          
-                          {/* Right Column - Benefits */}
-                          <div className="bg-white p-3 rounded-md border border-neutral-200">
-                            <div className="flex items-center mb-2">
-                              <HeartPulse className={`h-4 w-4 mr-2 ${
-                                colorTheme === "primary" 
-                                  ? "text-primary-500" 
-                                  : colorTheme === "secondary" 
-                                    ? "text-secondary-500" 
-                                    : "text-neutral-500"
-                              }`} />
-                              <h6 className={`font-medium ${
-                                colorTheme === "primary" 
-                                  ? "text-primary-800" 
-                                  : colorTheme === "secondary" 
-                                    ? "text-secondary-800" 
-                                    : "text-neutral-800"
-                              }`}>Benefits & Scientific Reasoning</h6>
-                            </div>
-                            
-                            {/* Check if reasoning has bullet points */}
-                            {item.reasoning.includes("- ") || item.reasoning.includes("• ") ? (
-                              <ul className="text-sm text-neutral-700 space-y-1 list-disc pl-4">
-                                {item.reasoning.split(/\n/).map((point: string, i: number) => {
-                                  const cleanPoint = point.replace(/^[-•]\s+/, "").trim();
-                                  return cleanPoint ? (
-                                    <li key={i} className="text-sm">{cleanPoint}</li>
-                                  ) : null;
-                                })}
-                              </ul>
-                            ) : (
-                              <p className="text-sm text-neutral-700">{item.reasoning}</p>
-                            )}
-                          </div>
-                        </div>
+                    {/* Supplements for this time of day */}
+                    <div className="divide-y divide-neutral-100">
+                      {timeItems.map((item, index) => {
+                        const cardId = `${timeOfDay}-${index}`;
+                        const isExpanded = expandedCards[cardId] || false;
+                        const quickInstruction = getQuickInstruction(item.instructions);
+                        const foodPairing = getFoodPairing(item.instructions);
+                        const dosage = getDosage(item.supplement);
+                        const cleanName = getCleanName(item.supplement);
                         
-                        {/* Action Buttons */}
-                        <div className="flex flex-wrap gap-2 mt-4 border-t border-neutral-100 pt-4">
-                          {/* Swap Button */}
-                          <button 
-                            className="flex items-center px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-md text-sm transition-all duration-150"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              alert(`Swap feature for "${item.supplement}" coming soon!`);
-                            }}
-                          >
-                            <RefreshCw className="h-4 w-4 mr-2" />
-                            <span>Swap</span>
-                          </button>
-                          
-                          {/* Remove Button */}
-                          <button 
-                            className="flex items-center px-3 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-md text-sm transition-all duration-150"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              alert(`Remove feature for "${item.supplement}" coming soon!`);
-                            }}
-                          >
-                            <X className="h-4 w-4 mr-2" />
-                            <span>Remove</span>
-                          </button>
-                          
-                          {/* Ask AI Button */}
-                          <button 
-                            className="flex items-center px-3 py-2 bg-violet-50 hover:bg-violet-100 text-violet-700 rounded-md text-sm transition-all duration-150"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              alert(`AI consultation for "${item.supplement}" coming soon!`);
-                            }}
-                          >
-                            <MessageSquareText className="h-4 w-4 mr-2" />
-                            <span>Ask AI</span>
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                        return (
+                          <div key={cardId} className="group">
+                            {/* Supplement Card - Compact View */}
+                            <div 
+                              className={`p-4 cursor-pointer hover:bg-neutral-50 transition-colors duration-200`}
+                              onClick={() => toggleCardExpansion(cardId)}
+                            >
+                              <div className="flex items-start justify-between">
+                                <div className="flex items-start">
+                                  <div className="mr-3 mt-1">
+                                    <Pill className={`h-5 w-5 ${textColor}`} />
+                                  </div>
+                                  <div>
+                                    <div className="flex items-center">
+                                      <h4 className="font-medium text-neutral-800">💊 {cleanName}</h4>
+                                      {dosage && (
+                                        <span className="ml-2 text-xs px-2 py-0.5 bg-neutral-100 rounded-full text-neutral-600">
+                                          {dosage}
+                                        </span>
+                                      )}
+                                      
+                                      {/* Quick Action Icons - visible on hover */}
+                                      <div className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1">
+                                        <button 
+                                          className="p-1 rounded-full hover:bg-blue-100 text-blue-500"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            alert(`Swap feature for "${item.supplement}" coming soon!`);
+                                          }}
+                                        >
+                                          <RefreshCw className="h-3.5 w-3.5" />
+                                        </button>
+                                        <button 
+                                          className="p-1 rounded-full hover:bg-red-100 text-red-500"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            alert(`Remove feature for "${item.supplement}" coming soon!`);
+                                          }}
+                                        >
+                                          <X className="h-3.5 w-3.5" />
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <p className="text-sm text-neutral-600 mt-1">
+                                      ✅ {quickInstruction}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div>
+                                  {isExpanded ? (
+                                    <ChevronUp className="h-5 w-5 text-neutral-400" />
+                                  ) : (
+                                    <ChevronDown className="h-5 w-5 text-neutral-400" />
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Expanded Details */}
+                            {isExpanded && (
+                              <div className="p-4 bg-neutral-50 border-t border-neutral-100">
+                                <div className="grid md:grid-cols-2 gap-4">
+                                  {/* Left Column */}
+                                  <div className="space-y-4">
+                                    {/* Brand Recommendation */}
+                                    {item.brand && (
+                                      <div className="bg-amber-50 p-3 rounded-md border border-amber-100">
+                                        <div className="flex items-center mb-2">
+                                          <ShoppingBag className="h-4 w-4 mr-2 text-amber-500" />
+                                          <h6 className="font-medium text-amber-800">Suggested Brand</h6>
+                                        </div>
+                                        <p className="text-sm text-amber-800">{item.brand}</p>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Instructions */}
+                                    <div className="bg-white p-3 rounded-md border border-neutral-200">
+                                      <div className="flex items-center mb-2">
+                                        <ScrollText className="h-4 w-4 mr-2 text-neutral-500" />
+                                        <h6 className="font-medium text-neutral-800">How to Take</h6>
+                                      </div>
+                                      <p className="text-sm text-neutral-700">{item.instructions}</p>
+                                    </div>
+                                    
+                                    {/* Food Pairing */}
+                                    {foodPairing && (
+                                      <div className="bg-green-50 p-3 rounded-md border border-green-100">
+                                        <div className="flex items-center mb-2">
+                                          <Utensils className="h-4 w-4 mr-2 text-green-500" />
+                                          <h6 className="font-medium text-green-800">Pairs Well With</h6>
+                                        </div>
+                                        <p className="text-sm text-green-800">{foodPairing}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Right Column - Benefits */}
+                                  <div className="bg-white p-3 rounded-md border border-neutral-200">
+                                    <div className="flex items-center mb-2">
+                                      <HeartPulse className="h-4 w-4 mr-2 text-primary-500" />
+                                      <h6 className="font-medium text-neutral-800">Why This Works For You</h6>
+                                    </div>
+                                    
+                                    {/* Check if reasoning has bullet points */}
+                                    {item.reasoning.includes("- ") || item.reasoning.includes("• ") ? (
+                                      <ul className="text-sm text-neutral-700 space-y-1 list-disc pl-4">
+                                        {item.reasoning.split(/\n/).map((point: string, i: number) => {
+                                          const cleanPoint = point.replace(/^[-•]\s+/, "").trim();
+                                          return cleanPoint ? (
+                                            <li key={i} className="text-sm">{cleanPoint}</li>
+                                          ) : null;
+                                        })}
+                                      </ul>
+                                    ) : (
+                                      <p className="text-sm text-neutral-700">{item.reasoning}</p>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                {/* Action Button */}
+                                <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-neutral-100">
+                                  <button 
+                                    className="flex items-center px-3 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-md text-sm transition-all duration-150"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      alert(`Ask AI about "${cleanName}" coming soon!`);
+                                    }}
+                                  >
+                                    <HelpCircle className="h-4 w-4 mr-2" />
+                                    <span>Why am I taking this?</span>
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 );
               })}
+            </div>
+            
+            {/* Pro Tips Section */}
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+              <div className="flex items-center mb-3">
+                <Info className="h-5 w-5 mr-2 text-blue-600" />
+                <h5 className="text-blue-800 font-medium">Pro Tips For Your Routine</h5>
+              </div>
+              <div className="space-y-3">
+                <div className="flex">
+                  <span className="mr-2">💡</span>
+                  <p className="text-sm text-blue-800">Taking Vitamin D3 and Fish Oil together? That's great! Both are fat-soluble and complement each other well at lunch.</p>
+                </div>
+                <div className="flex">
+                  <span className="mr-2">💡</span>
+                  <p className="text-sm text-blue-800">If you're sensitive to zinc, try it after a fuller lunch and not on an empty stomach.</p>
+                </div>
+              </div>
             </div>
           </div>
         )}
