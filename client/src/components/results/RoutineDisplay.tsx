@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { Clock, Star, ScrollText, Pill, ChevronDown, ChevronUp, LucideIcon, Utensils } from "lucide-react";
+import { 
+  Clock, Star, ScrollText, Pill, ChevronDown, ChevronUp, 
+  Utensils, RefreshCw, X, MessageSquareText 
+} from "lucide-react";
 import { SupplementRoutineItem } from "@/lib/types";
 
 type RoutineDisplayProps = {
@@ -254,6 +257,45 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                               <p className="text-sm text-neutral-700">{item.reasoning}</p>
                             )}
                           </div>
+                        </div>
+                        
+                        {/* Action Buttons */}
+                        <div className="flex flex-wrap gap-2 mt-4 border-t border-neutral-100 pt-4">
+                          {/* Swap Button */}
+                          <button 
+                            className="flex items-center px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-md text-sm transition-all duration-150"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              alert(`Swap feature for "${item.supplement}" coming soon!`);
+                            }}
+                          >
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            <span>Swap</span>
+                          </button>
+                          
+                          {/* Remove Button */}
+                          <button 
+                            className="flex items-center px-3 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-md text-sm transition-all duration-150"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              alert(`Remove feature for "${item.supplement}" coming soon!`);
+                            }}
+                          >
+                            <X className="h-4 w-4 mr-2" />
+                            <span>Remove</span>
+                          </button>
+                          
+                          {/* Ask AI Button */}
+                          <button 
+                            className="flex items-center px-3 py-2 bg-violet-50 hover:bg-violet-100 text-violet-700 rounded-md text-sm transition-all duration-150"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              alert(`AI consultation for "${item.supplement}" coming soon!`);
+                            }}
+                          >
+                            <MessageSquareText className="h-4 w-4 mr-2" />
+                            <span>Ask AI</span>
+                          </button>
                         </div>
                       </div>
                     )}
