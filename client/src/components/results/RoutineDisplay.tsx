@@ -4,16 +4,18 @@ import {
   Utensils, RefreshCw, X, MessageSquareText, ShoppingBag,
   HeartPulse, Award, CircleCheck, Save, Check, Sun, 
   Coffee, Sunset, Moon, HelpCircle, Info, 
-  AlertCircle
+  AlertCircle, Bot
 } from "lucide-react";
 import { SupplementRoutineItem } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
+import AskAIModal from "./AskAIModal";
 
 type RoutineDisplayProps = {
   supplementRoutine: SupplementRoutineItem[];
+  healthGoals?: string[]; // Health goals for context in Ask AI
 };
 
-export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProps) {
+export default function RoutineDisplay({ supplementRoutine, healthGoals = ["general health"] }: RoutineDisplayProps) {
   // Get toast hook for notifications
   const { toast } = useToast();
   
@@ -28,6 +30,10 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
   
   // State to track the current routine with removed items filtered out
   const [currentRoutine, setCurrentRoutine] = useState<SupplementRoutineItem[]>(supplementRoutine);
+  
+  // State for Ask AI modal
+  const [isAskAIModalOpen, setIsAskAIModalOpen] = useState(false);
+  const [selectedSupplement, setSelectedSupplement] = useState<SupplementRoutineItem | null>(null);
   
   // Update currentRoutine when removedItems changes
   useEffect(() => {
@@ -523,11 +529,13 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                                     className="flex items-center px-3 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-md text-sm transition-all duration-150"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      alert(`Ask AI about "${cleanName}" coming soon!`);
+                                      // Open Ask AI modal with this supplement
+                                      setSelectedSupplement(item);
+                                      setIsAskAIModalOpen(true);
                                     }}
                                   >
-                                    <HelpCircle className="h-4 w-4 mr-2" />
-                                    <span>Why am I taking this?</span>
+                                    <Bot className="h-4 w-4 mr-2" />
+                                    <span>Ask AI about this</span>
                                   </button>
                                   
                                   <button 
@@ -601,6 +609,16 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
           </div>
         )}
       </div>
+      
+      {/* Ask AI Modal */}
+      {selectedSupplement && (
+        <AskAIModal 
+          isOpen={isAskAIModalOpen} 
+          onClose={() => setIsAskAIModalOpen(false)}
+          supplement={selectedSupplement}
+          healthGoals={healthGoals}
+        />
+      )}
     </div>
   );
 }
