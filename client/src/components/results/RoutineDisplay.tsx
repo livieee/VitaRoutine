@@ -1,18 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Clock, Star, ScrollText, Pill, ChevronDown, ChevronUp, 
   Utensils, RefreshCw, X, MessageSquareText, ShoppingBag,
-  HeartPulse, Award, CircleCheck
+  HeartPulse, Award, CircleCheck, Save, Check
 } from "lucide-react";
 import { SupplementRoutineItem } from "@/lib/types";
+import { useToast } from "@/hooks/use-toast";
 
 type RoutineDisplayProps = {
   supplementRoutine: SupplementRoutineItem[];
 };
 
 export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProps) {
+  // Get toast hook for notifications
+  const { toast } = useToast();
+  
   // State to track which supplement cards are expanded
   const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
+  
+  // State to track if the routine is already saved
+  const [isSaved, setIsSaved] = useState<boolean>(false);
+  
+  // Check if routine exists in localStorage on component mount
+  useEffect(() => {
+    const savedRoutine = localStorage.getItem("vitaRoutine");
+    if (savedRoutine) {
+      try {
+        const parsedRoutine = JSON.parse(savedRoutine);
+        // A simple check to see if what's saved matches the current routine
+        if (parsedRoutine && 
+            Array.isArray(parsedRoutine) && 
+            parsedRoutine.length === supplementRoutine.length) {
+          setIsSaved(true);
+        }
+      } catch (error) {
+        console.error("Error parsing saved routine:", error);
+      }
+    }
+  }, [supplementRoutine]);
+  
+  // Function to save routine to localStorage
+  const saveRoutine = () => {
+    try {
+      localStorage.setItem("vitaRoutine", JSON.stringify(supplementRoutine));
+      setIsSaved(true);
+      toast({
+        title: "Success!",
+        description: "Your supplement routine has been saved.",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error saving routine:", error);
+      toast({
+        title: "Error",
+        description: "Could not save your routine. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+      });
+    }
+  };
 
   // Toggle card expansion
   const toggleCardExpansion = (index: number) => {
@@ -79,7 +125,35 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
         ) : (
           <div className="space-y-4">
             <div className="bg-primary-50 p-4 rounded-lg border border-primary-100">
-              <h5 className="text-primary-800 font-medium mb-3">Your Personalized Supplement Routine</h5>
+              <div className="flex flex-wrap items-center justify-between mb-3">
+                <h5 className="text-primary-800 font-medium">Your Personalized Supplement Routine</h5>
+                
+                {/* Save Routine Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    saveRoutine();
+                  }}
+                  className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-150 ${
+                    isSaved
+                      ? "bg-green-100 text-green-700"
+                      : "bg-primary-100 hover:bg-primary-200 text-primary-700"
+                  }`}
+                  disabled={isSaved}
+                >
+                  {isSaved ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      <span>Saved</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      <span>💾 Save My Routine</span>
+                    </>
+                  )}
+                </button>
+              </div>
               <p className="text-neutral-700 mb-3">Based on your goals and lifestyle, here's a scientifically backed supplement and nutrition plan. Click on any supplement to see more details.</p>
             </div>
 
