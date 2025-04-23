@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { SupplementRoutineItem } from "@/lib/types";
-import { Loader2, X, CheckCircle2, ChevronsUpDown } from "lucide-react";
+import { Loader2, X, CheckCircle2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -76,6 +76,13 @@ export default function SwapModal({
   const handleGenerateAlternative = async () => {
     setIsLoading(true);
     setError(null);
+    
+    // Check if OpenAI API key is available
+    if (!import.meta.env.VITE_OPENAI_API_KEY) {
+      setError("OPENAI_API_KEY is missing. This feature requires an OpenAI API key to generate alternative supplements.");
+      setIsLoading(false);
+      return;
+    }
     
     try {
       // Prepare health goals text
@@ -242,13 +249,54 @@ Return ONLY a valid JSON object with these exact keys:
           {error && (
             <div className="bg-red-50 p-4 rounded-lg border border-red-100">
               <p className="text-red-700 text-sm">{error}</p>
-              <Button 
-                variant="outline" 
-                className="mt-2" 
-                onClick={() => setError(null)}
-              >
-                Try Again
-              </Button>
+              
+              {/* Special handling for API key errors */}
+              {error.includes("OPENAI_API_KEY") ? (
+                <div className="mt-2">
+                  <p className="text-neutral-700 text-xs mt-2">
+                    To use this feature, you need an OpenAI API key. You can get one by:
+                  </p>
+                  <ol className="text-neutral-700 text-xs mt-1 list-decimal pl-4 space-y-1">
+                    <li>Creating an account at <a href="https://openai.com" className="text-blue-500 hover:underline" target="_blank" rel="noopener noreferrer">OpenAI.com</a></li>
+                    <li>Going to the API section and creating a new API key</li>
+                  </ol>
+                  
+                  <div className="mt-3 flex justify-between">
+                    <Button 
+                      variant="outline" 
+                      className="text-xs bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100"
+                      onClick={() => {
+                        // This would be handled by the ask_secrets tool in the actual implementation
+                        toast({
+                          title: "API Key Required",
+                          description: "To use the Swap Supplement feature, please provide your OpenAI API key in the environment variables.",
+                          duration: 5000,
+                        });
+                      }}
+                    >
+                      Add API Key
+                    </Button>
+                    
+                    <Button 
+                      variant="outline" 
+                      className="text-xs bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+                      onClick={() => {
+                        window.location.reload();
+                      }}
+                    >
+                      I've Added My API Key
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  className="mt-2" 
+                  onClick={() => setError(null)}
+                >
+                  Try Again
+                </Button>
+              )}
             </div>
           )}
 
