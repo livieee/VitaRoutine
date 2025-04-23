@@ -1,21 +1,19 @@
-import { Heart, Pill, FlaskConical, Sparkles } from "lucide-react";
+import { Heart } from "lucide-react";
 
 export default function Header() {
   return (
     <header className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <div className="flex items-center space-x-3">
-          {/* Custom SVG Logo */}
-          <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-2.5 rounded-full border border-primary-200 shadow-sm">
+          {/* Blue Heart Logo */}
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-2.5 rounded-full border border-blue-200 shadow-sm">
             <div className="relative h-7 w-7 flex items-center justify-center">
-              <Pill className="h-5 w-5 text-primary-600 absolute" />
-              <Sparkles className="h-3.5 w-3.5 text-amber-500 absolute -top-1 -right-1" />
-              <FlaskConical className="h-3.5 w-3.5 text-green-500 absolute -bottom-1 -left-1" />
+              <Heart className="h-5 w-5 text-blue-500" fill="currentColor" />
             </div>
           </div>
           <div>
             <h1 className="text-xl font-semibold text-neutral-800">
-              <span className="bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">Vita</span>
+              <span className="bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">Vita</span>
               <span className="text-neutral-700">Routine</span>
             </h1>
             <p className="text-xs text-neutral-500">Your Personal Supplement Expert</p>
@@ -26,7 +24,7 @@ export default function Header() {
             <li>
               <a
                 href="/"
-                className="text-neutral-600 hover:text-primary-600 font-medium"
+                className="text-neutral-600 hover:text-blue-600 font-medium"
               >
                 Home
               </a>
@@ -34,7 +32,7 @@ export default function Header() {
             <li>
               <a
                 href="/about"
-                className="text-neutral-600 hover:text-primary-600 font-medium"
+                className="text-neutral-600 hover:text-blue-600 font-medium"
               >
                 About
               </a>
@@ -42,7 +40,7 @@ export default function Header() {
             <li>
               <a
                 href="/contact"
-                className="text-neutral-600 hover:text-primary-600 font-medium"
+                className="text-neutral-600 hover:text-blue-600 font-medium"
               >
                 Contact
               </a>
