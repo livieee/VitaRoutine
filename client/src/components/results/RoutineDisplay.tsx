@@ -43,7 +43,7 @@ export default function RoutineDisplay({ supplementRoutine, healthGoals = ["gene
 
   // Check if routine exists in localStorage on component mount
   useEffect(() => {
-    const savedRoutine = localStorage.getItem("vitaRoutine");
+    const savedRoutine = localStorage.getItem("vitaroutine.com:routine");
     if (savedRoutine) {
       try {
         const parsedRoutine = JSON.parse(savedRoutine);
@@ -54,7 +54,7 @@ export default function RoutineDisplay({ supplementRoutine, healthGoals = ["gene
           setIsSaved(true);
           
           // Also check for any previously removed items
-          const savedRemovedItems = localStorage.getItem("vitaRemovedItems");
+          const savedRemovedItems = localStorage.getItem("vitaroutine.com:removedItems");
           if (savedRemovedItems) {
             try {
               const parsedRemovedItems = JSON.parse(savedRemovedItems);
@@ -76,10 +76,10 @@ export default function RoutineDisplay({ supplementRoutine, healthGoals = ["gene
   const saveRoutine = () => {
     try {
       // Save the current routine (with removed items filtered out)
-      localStorage.setItem("vitaRoutine", JSON.stringify(currentRoutine));
+      localStorage.setItem("vitaroutine.com:routine", JSON.stringify(currentRoutine));
       
       // Save the record of removed items
-      localStorage.setItem("vitaRemovedItems", JSON.stringify(removedItems));
+      localStorage.setItem("vitaroutine.com:removedItems", JSON.stringify(removedItems));
       
       setIsSaved(true);
       toast({
@@ -291,9 +291,9 @@ export default function RoutineDisplay({ supplementRoutine, healthGoals = ["gene
                                 
                                 // Update localStorage if needed
                                 if (Object.keys(updatedRemovedItems).length > 0) {
-                                  localStorage.setItem("vitaRemovedItems", JSON.stringify(updatedRemovedItems));
+                                  localStorage.setItem("vitaroutine.com:removedItems", JSON.stringify(updatedRemovedItems));
                                 } else {
-                                  localStorage.removeItem("vitaRemovedItems");
+                                  localStorage.removeItem("vitaroutine.com:removedItems");
                                 }
                                 
                                 setIsSaved(false);
@@ -320,7 +320,7 @@ export default function RoutineDisplay({ supplementRoutine, healthGoals = ["gene
                         // Clear removed items
                         setRemovedItems({});
                         // Clear from localStorage if it exists
-                        localStorage.removeItem("vitaRemovedItems");
+                        localStorage.removeItem("vitaroutine.com:removedItems");
                         setIsSaved(false);
                         toast({
                           title: "All Supplements Restored",
