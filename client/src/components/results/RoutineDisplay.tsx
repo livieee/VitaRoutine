@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { 
   Clock, Star, ScrollText, Pill, ChevronDown, ChevronUp, 
   Utensils, RefreshCw, X, MessageSquareText, ShoppingBag,
-  HeartPulse, Award, CircleCheck, Save, Check
+  HeartPulse, Award, CircleCheck, Save, Check, Sun, 
+  Coffee, Sunset, Moon, HelpCircle, Info
 } from "lucide-react";
 import { SupplementRoutineItem } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
@@ -16,7 +17,7 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
   const { toast } = useToast();
   
   // State to track which supplement cards are expanded
-  const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
   
   // State to track if the routine is already saved
   const [isSaved, setIsSaved] = useState<boolean>(false);
@@ -61,10 +62,10 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
   };
 
   // Toggle card expansion
-  const toggleCardExpansion = (index: number) => {
+  const toggleCardExpansion = (cardId: string) => {
     setExpandedCards(prev => ({
       ...prev,
-      [index]: !prev[index]
+      [cardId]: !prev[cardId]
     }));
   };
 
@@ -104,16 +105,52 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
   const sortedSupplements = supplementRoutine
     .slice()
     .sort((a, b) => {
-      const timeOrder = {"Morning": 1, "Midday": 2, "Evening": 3};
+      const timeOrder = {"Morning": 1, "Midday": 2, "Evening": 3, "Night": 4};
       return timeOrder[a.timeOfDay as keyof typeof timeOrder] - timeOrder[b.timeOfDay as keyof typeof timeOrder];
     });
+    
+  // Group supplements by time of day
+  const groupedSupplements = sortedSupplements.reduce((acc, item) => {
+    if (!acc[item.timeOfDay]) {
+      acc[item.timeOfDay] = [];
+    }
+    acc[item.timeOfDay].push(item);
+    return acc;
+  }, {} as Record<string, SupplementRoutineItem[]>);
+
+  // Get time of day icon
+  const getTimeOfDayIcon = (timeOfDay: string) => {
+    switch(timeOfDay) {
+      case "Morning":
+        return <Sun className="h-5 w-5" />;
+      case "Midday":
+        return <Coffee className="h-5 w-5" />;
+      case "Evening":
+        return <Sunset className="h-5 w-5" />;
+      case "Night":
+        return <Moon className="h-5 w-5" />;
+      default:
+        return <Clock className="h-5 w-5" />;
+    }
+  };
+
+  // Extract dosage from supplement name if available
+  const getDosage = (supplement: string): string | null => {
+    const dosageMatch = supplement.match(/\(([^)]+)\)/);
+    return dosageMatch ? dosageMatch[1] : null;
+  };
+
+  // Clean supplement name by removing dosage
+  const getCleanName = (supplement: string): string => {
+    return supplement.replace(/\s*\([^)]*\)/, '').trim();
+  };
 
   return (
     <div className="border border-neutral-200 rounded-lg overflow-hidden mb-8 shadow-md transition-all duration-300 hover:shadow-lg content-section entered">
       <div className="bg-gradient-to-r from-primary-50 to-primary-100 px-4 py-3 border-b border-primary-100">
         <h4 className="font-medium text-primary-800 flex items-center">
           <Clock className="mr-2 h-5 w-5 text-primary-500" />
-          Daily Supplement Schedule
+          Your Daily Supplement Plan
         </h4>
       </div>
       
@@ -123,7 +160,7 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
             No supplement routine available.
           </p>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="bg-primary-50 p-4 rounded-lg border border-primary-100">
               <div className="flex flex-wrap items-center justify-between mb-3">
                 <h5 className="text-primary-800 font-medium">Your Personalized Supplement Routine</h5>
@@ -144,7 +181,7 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                   {isSaved ? (
                     <>
                       <Check className="h-4 w-4 mr-2" />
-                      <span>Saved</span>
+                      <span>Saved!</span>
                     </>
                   ) : (
                     <>
@@ -154,7 +191,7 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                   )}
                 </button>
               </div>
-              <p className="text-neutral-700 mb-3">Based on your goals and lifestyle, here's a scientifically backed supplement and nutrition plan. Click on any supplement to see more details.</p>
+              <p className="text-neutral-700 mb-3">Here's your science-backed supplement plan tailored to your needs. Click on any supplement for details!</p>
             </div>
 
             {/* Timeline View */}
