@@ -344,9 +344,20 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                                             <div className="bg-green-100 p-1 rounded-full mr-2 mt-0.5">
                                               <Utensils className="h-3 w-3 text-green-600" />
                                             </div>
-                                            <p className="text-sm text-neutral-700 flex-1">
-                                              Pairs well with: <span className="text-green-700">{foodPairing}</span>
-                                            </p>
+                                            <div className="flex-1">
+                                              <p className="text-sm font-medium text-green-700 mb-1">Food Ideas:</p>
+                                              <div className="text-sm text-neutral-700 pl-1">
+                                                {foodPairing.includes(',') ? (
+                                                  <ul className="space-y-1 list-disc pl-4">
+                                                    {foodPairing.split(',').map((food, i) => (
+                                                      <li key={i}>{food.trim()}</li>
+                                                    ))}
+                                                  </ul>
+                                                ) : (
+                                                  <p>{foodPairing}</p>
+                                                )}
+                                              </div>
+                                            </div>
                                           </div>
                                         )}
                                       </div>
