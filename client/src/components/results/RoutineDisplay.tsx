@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { 
   Clock, Star, ScrollText, Pill, ChevronDown, ChevronUp, 
-  Utensils, RefreshCw, X, MessageSquareText 
+  Utensils, RefreshCw, X, MessageSquareText, ShoppingBag,
+  HeartPulse, Award, CircleCheck
 } from "lucide-react";
 import { SupplementRoutineItem } from "@/lib/types";
 
@@ -178,7 +179,7 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                             {item.brand && (
                               <div className="bg-amber-50 p-3 rounded-md border border-amber-100">
                                 <div className="flex items-center mb-2">
-                                  <Star className="h-4 w-4 mr-2 text-amber-500" />
+                                  <ShoppingBag className="h-4 w-4 mr-2 text-amber-500" />
                                   <h6 className="font-medium text-amber-800">Recommended Brand</h6>
                                 </div>
                                 <p className="text-sm text-amber-800">{item.brand}</p>
@@ -227,7 +228,7 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                           {/* Right Column - Benefits */}
                           <div className="bg-white p-3 rounded-md border border-neutral-200">
                             <div className="flex items-center mb-2">
-                              <Star className={`h-4 w-4 mr-2 ${
+                              <HeartPulse className={`h-4 w-4 mr-2 ${
                                 colorTheme === "primary" 
                                   ? "text-primary-500" 
                                   : colorTheme === "secondary" 
