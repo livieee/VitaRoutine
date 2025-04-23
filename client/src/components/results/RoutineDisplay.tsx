@@ -9,6 +9,7 @@ import {
 import { SupplementRoutineItem } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import AskAIModal from "./AskAIModal";
+import SwapModal from "./SwapModal";
 
 type RoutineDisplayProps = {
   supplementRoutine: SupplementRoutineItem[];
