@@ -1,0 +1,60 @@
+🔄 1. Swap Supplement
+📌 Goal:
+Let users replace a specific supplement with an alternative that serves a similar function (e.g., same health goal, different ingredient or brand).
+🧠 User Need:
+“I don’t have this at home / I want a vegan or cheaper option / this one makes me uncomfortable.”
+🖼 UI:
+* Button: “🔄 Swap”
+* Location: Visible on expanded supplement card
+* Behavior: On click → triggers new GPT-4 API call scoped to that specific supplement
+🤖 Prompt Format (to GPT-4 API):
+Suggest an alternative to {supplement name} that supports {health goal} and fits {user preferences} (e.g., vegan, budget-friendly). Return supplement name, dose, timing, and instruction.
+✅ Acceptance Criteria:
+* New supplement renders in place of the original
+* Toast: “Swapped successfully!”
+* Swap result stored in local state (and localStorage if saved)
+
+❌ 2. Remove Supplement
+📌 Goal:
+Allow users to temporarily remove a supplement from their routine if they don't want to take it (due to sensitivity, schedule, preference).
+🧠 User Need:
+“This one doesn’t work for me” or “I want fewer items today.”
+🖼 UI:
+* Button: “❌ Remove”
+* Location: Visible on expanded card or on hover (collapsed state)
+* Behavior: On click → removes the supplement from display (not from server)
+✅ Acceptance Criteria:
+* Card disappears from UI with animation
+* Toast: “Removed from routine. You can re-add later by regenerating.”
+* Not permanently deleted from server-side; just hidden in UI/local copy
+
+🤖 3. Ask AI (Contextual Q&A)
+📌 Goal:
+Give users a trusted, AI-driven way to ask personalized questions about a supplement (e.g. purpose, interactions, timing).
+🧠 User Need:
+“I want to understand why I’m taking this” or “Is this safe with my current meds?” without leaving the app.
+🖼 UI:
+* Button: “🤖 Ask AI”
+* Location: Always available in expanded card
+* Behavior: Opens a modal chatbox with:
+    * Input: User writes a question
+    * Auto-filled context: Supplement details + routine data
+    * Answer shown in assistant tone
+🤖 Prompt Template:
+text
+CopyEdit
+You're a helpful nutrition assistant. Based on the user's routine:
+- Supplement: Magnesium Glycinate, 200mg, 10:00 PM
+- Goal: Sleep support
+- Taken with dinner
+
+Answer the user’s question clearly and briefly:
+Q: “Can I take this with melatonin?”
+✅ Acceptance Criteria:
+* Modal opens with assistant response
+* Allows user to ask follow-up questions
+* Modal can be closed without losing state
+
+🔄 Shared UX Notes
+* All changes (Swap / Remove / Ask AI) update local copy of the routine (routineState)
+* If saved, updated routine overwrites localStorage

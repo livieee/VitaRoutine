@@ -3,7 +3,8 @@ import {
   Clock, Star, ScrollText, Pill, ChevronDown, ChevronUp, 
   Utensils, RefreshCw, X, MessageSquareText, ShoppingBag,
   HeartPulse, Award, CircleCheck, Save, Check, Sun, 
-  Coffee, Sunset, Moon, HelpCircle, Info
+  Coffee, Sunset, Moon, HelpCircle, Info, 
+  AlertCircle
 } from "lucide-react";
 import { SupplementRoutineItem } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +23,18 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
   // State to track if the routine is already saved
   const [isSaved, setIsSaved] = useState<boolean>(false);
   
+  // State to track removed supplements
+  const [removedItems, setRemovedItems] = useState<Record<string, boolean>>({});
+  
+  // State to track the current routine with removed items filtered out
+  const [currentRoutine, setCurrentRoutine] = useState<SupplementRoutineItem[]>(supplementRoutine);
+  
+  // Update currentRoutine when removedItems changes
+  useEffect(() => {
+    const updatedRoutine = supplementRoutine.filter((_, index) => !removedItems[index.toString()]);
+    setCurrentRoutine(updatedRoutine);
+  }, [removedItems, supplementRoutine]);
+
   // Check if routine exists in localStorage on component mount
   useEffect(() => {
     const savedRoutine = localStorage.getItem("vitaRoutine");
@@ -33,6 +46,19 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
             Array.isArray(parsedRoutine) && 
             parsedRoutine.length === supplementRoutine.length) {
           setIsSaved(true);
+          
+          // Also check for any previously removed items
+          const savedRemovedItems = localStorage.getItem("vitaRemovedItems");
+          if (savedRemovedItems) {
+            try {
+              const parsedRemovedItems = JSON.parse(savedRemovedItems);
+              if (parsedRemovedItems && typeof parsedRemovedItems === 'object') {
+                setRemovedItems(parsedRemovedItems);
+              }
+            } catch (e) {
+              console.error("Error parsing removed items:", e);
+            }
+          }
         }
       } catch (error) {
         console.error("Error parsing saved routine:", error);
@@ -43,7 +69,12 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
   // Function to save routine to localStorage
   const saveRoutine = () => {
     try {
-      localStorage.setItem("vitaRoutine", JSON.stringify(supplementRoutine));
+      // Save the current routine (with removed items filtered out)
+      localStorage.setItem("vitaRoutine", JSON.stringify(currentRoutine));
+      
+      // Save the record of removed items
+      localStorage.setItem("vitaRemovedItems", JSON.stringify(removedItems));
+      
       setIsSaved(true);
       toast({
         title: "Success!",
@@ -59,6 +90,25 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
         duration: 3000,
       });
     }
+  };
+  
+  // Function to remove an item from the routine
+  const removeItem = (supplementIndex: number) => {
+    setRemovedItems(prev => ({
+      ...prev,
+      [supplementIndex.toString()]: true
+    }));
+    
+    // If the routine was saved, mark it as unsaved since we've modified it
+    if (isSaved) {
+      setIsSaved(false);
+    }
+    
+    toast({
+      title: "Supplement Removed",
+      description: "This supplement has been removed from your routine. You can re-add it by regenerating your routine.",
+      duration: 3000,
+    });
   };
 
   // Toggle card expansion
@@ -93,7 +143,11 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
     return foodPairingMatch ? foodPairingMatch[1].trim() : null;
   };
 
-  const sortedSupplements = supplementRoutine
+  // Filter out removed supplements
+  const filteredSupplements = supplementRoutine
+    .filter((_, index) => !removedItems[index.toString()]);
+  
+  const sortedSupplements = filteredSupplements
     .slice()
     .sort((a, b) => {
       const timeOrder = {"Morning": 1, "Midday": 2, "Evening": 3, "Night": 4};
@@ -183,6 +237,21 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                 </button>
               </div>
               <p className="text-neutral-700 mb-3">Here's your science-backed supplement plan tailored to your needs. Click on any supplement for details!</p>
+              
+              {/* Removed Items Notification */}
+              {Object.keys(removedItems).length > 0 && (
+                <div className="bg-red-50 border border-red-100 rounded-md p-3 mt-2 mb-2 flex items-start">
+                  <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm text-red-700">
+                      <span className="font-medium">Note:</span> You've removed {Object.keys(removedItems).length} supplement{Object.keys(removedItems).length !== 1 ? 's' : ''} from your routine.
+                    </p>
+                    <p className="text-xs text-red-600 mt-1">
+                      Removed supplements won't appear in your saved routine. You can generate a new routine to restore all supplements.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Enhanced Time-of-Day Grouping */}
@@ -291,7 +360,13 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                                           className="p-1 rounded-full hover:bg-red-100 text-red-500"
                                           onClick={(e) => {
                                             e.stopPropagation();
-                                            alert(`Remove feature for "${item.supplement}" coming soon!`);
+                                            // Find the correct index in the original supplementRoutine array
+                                            const supplementIndex = supplementRoutine.findIndex(
+                                              s => s.supplement === item.supplement && s.timeOfDay === item.timeOfDay
+                                            );
+                                            if (supplementIndex !== -1) {
+                                              removeItem(supplementIndex);
+                                            }
                                           }}
                                           title="Remove supplement"
                                         >
@@ -364,7 +439,7 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                                   </div>
                                 </div>
                                 
-                                {/* Action Button */}
+                                {/* Action Buttons */}
                                 <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-neutral-100">
                                   <button 
                                     className="flex items-center px-3 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-md text-sm transition-all duration-150"
@@ -375,6 +450,34 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                                   >
                                     <HelpCircle className="h-4 w-4 mr-2" />
                                     <span>Why am I taking this?</span>
+                                  </button>
+                                  
+                                  <button 
+                                    className="flex items-center px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-md text-sm transition-all duration-150"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      alert(`Swap ${cleanName} feature coming soon!`);
+                                    }}
+                                  >
+                                    <RefreshCw className="h-4 w-4 mr-2" />
+                                    <span>Swap Supplement</span>
+                                  </button>
+                                  
+                                  <button 
+                                    className="flex items-center px-3 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-md text-sm transition-all duration-150"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      // Find the correct index in the original supplementRoutine array
+                                      const supplementIndex = supplementRoutine.findIndex(
+                                        s => s.supplement === item.supplement && s.timeOfDay === item.timeOfDay
+                                      );
+                                      if (supplementIndex !== -1) {
+                                        removeItem(supplementIndex);
+                                      }
+                                    }}
+                                  >
+                                    <X className="h-4 w-4 mr-2" />
+                                    <span>Remove from Routine</span>
                                   </button>
                                 </div>
                               </div>
