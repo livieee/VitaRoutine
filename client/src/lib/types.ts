@@ -21,6 +21,7 @@ export interface SupplementRoutineItem {
   instructions: string;
   reasoning: string;
   time: string;
+  brand?: string; // Optional to maintain backward compatibility
 }
 
 export interface FoodSuggestion {
