@@ -1,4 +1,5 @@
-import { Clock, Star, ScrollText, Pill } from "lucide-react";
+import { useState } from "react";
+import { Clock, Star, ScrollText, Pill, ChevronDown, ChevronUp, LucideIcon, Utensils } from "lucide-react";
 import { SupplementRoutineItem } from "@/lib/types";
 
 type RoutineDisplayProps = {
@@ -6,6 +7,57 @@ type RoutineDisplayProps = {
 };
 
 export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProps) {
+  // State to track which supplement cards are expanded
+  const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
+
+  // Toggle card expansion
+  const toggleCardExpansion = (index: number) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
+  // Get time of day color
+  const getTimeOfDayColor = (timeOfDay: string) => {
+    return timeOfDay === "Morning"
+      ? "primary"
+      : timeOfDay === "Midday"
+      ? "secondary"
+      : "neutral";
+  };
+
+  // Function to extract a quick instruction from the full instructions
+  const getQuickInstruction = (instructions: string): string => {
+    // Try to find patterns like "Take with..." or "Take on..."
+    const takeWithMatch = instructions.match(/take with ([^.]+)/i);
+    const takeOnMatch = instructions.match(/take on ([^.]+)/i);
+    const takeBeforeMatch = instructions.match(/take before ([^.]+)/i);
+    const takeAfterMatch = instructions.match(/take after ([^.]+)/i);
+    
+    if (takeWithMatch) return `Take with ${takeWithMatch[1]}`;
+    if (takeOnMatch) return `Take on ${takeOnMatch[1]}`;
+    if (takeBeforeMatch) return `Take before ${takeBeforeMatch[1]}`;
+    if (takeAfterMatch) return `Take after ${takeAfterMatch[1]}`;
+    
+    // If no match, take first sentence or truncate
+    const firstSentence = instructions.split('.')[0];
+    return firstSentence.length > 40 ? `${firstSentence.substring(0, 37)}...` : firstSentence;
+  };
+  
+  // Format the food pairing from instructions if available
+  const getFoodPairing = (instructions: string): string | null => {
+    const foodPairingMatch = instructions.match(/(?:take|pair|consume) with ([^.]+)/i);
+    return foodPairingMatch ? foodPairingMatch[1].trim() : null;
+  };
+
+  const sortedSupplements = supplementRoutine
+    .slice()
+    .sort((a, b) => {
+      const timeOrder = {"Morning": 1, "Midday": 2, "Evening": 3};
+      return timeOrder[a.timeOfDay as keyof typeof timeOrder] - timeOrder[b.timeOfDay as keyof typeof timeOrder];
+    });
+
   return (
     <div className="border border-neutral-200 rounded-lg overflow-hidden mb-8 shadow-md transition-all duration-300 hover:shadow-lg content-section entered">
       <div className="bg-gradient-to-r from-primary-50 to-primary-100 px-4 py-3 border-b border-primary-100">
@@ -21,113 +73,195 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
             No supplement routine available.
           </p>
         ) : (
-          <>
-            <div className="mb-6 bg-primary-50 p-4 rounded-lg border border-primary-100">
+          <div className="space-y-4">
+            <div className="bg-primary-50 p-4 rounded-lg border border-primary-100">
               <h5 className="text-primary-800 font-medium mb-3">Your Personalized Supplement Routine</h5>
-              <p className="text-neutral-700 mb-3">Based on your goals and lifestyle, here's a scientifically backed supplement and nutrition plan:</p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {supplementRoutine
-                  .slice()
-                  .sort((a, b) => {
-                    const timeOrder = {"Morning": 1, "Midday": 2, "Evening": 3};
-                    return timeOrder[a.timeOfDay as keyof typeof timeOrder] - timeOrder[b.timeOfDay as keyof typeof timeOrder];
-                  })
-                  .map((item, idx) => (
-                    <div key={`summary-${idx}`} className="bg-white rounded-md p-3 border border-primary-100 shadow-sm">
-                      <div className="flex items-center mb-1">
-                        <div className={`w-2 h-2 rounded-full mr-2 ${
-                          item.timeOfDay === "Morning" ? "bg-primary-500" : 
-                          item.timeOfDay === "Midday" ? "bg-secondary-500" : 
-                          "bg-neutral-500"
-                        }`}></div>
-                        <span className="text-sm font-medium text-neutral-600">{item.time} ({item.timeOfDay})</span>
-                      </div>
-                      <div className="text-neutral-800 font-medium">{item.supplement}</div>
-                      {item.brand && (
-                        <div className="text-xs text-amber-600 mt-1">
-                          <span className="font-medium">Brand: {item.brand}</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-              </div>
+              <p className="text-neutral-700 mb-3">Based on your goals and lifestyle, here's a scientifically backed supplement and nutrition plan. Click on any supplement to see more details.</p>
             </div>
-          
-            {supplementRoutine.map((item, index) => (
-              <div className="mb-8 last:mb-0 border border-neutral-100 rounded-lg p-4 hover:border-primary-200 transition-all duration-200 interactive-card" key={index}>
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-start">
+
+            {/* Timeline View */}
+            <div className="space-y-3">
+              {sortedSupplements.map((item, index) => {
+                const colorTheme = getTimeOfDayColor(item.timeOfDay);
+                const isExpanded = expandedCards[index] || false;
+                const quickInstruction = getQuickInstruction(item.instructions);
+                const foodPairing = getFoodPairing(item.instructions);
+                
+                return (
+                  <div 
+                    key={index} 
+                    className={`border rounded-lg transition-all duration-300 overflow-hidden ${
+                      isExpanded 
+                        ? colorTheme === "primary" 
+                          ? "border-primary-300 shadow-md" 
+                          : colorTheme === "secondary" 
+                            ? "border-secondary-300 shadow-md" 
+                            : "border-neutral-300 shadow-md"
+                        : "border-neutral-200 hover:border-neutral-300"
+                    }`}
+                  >
+                    {/* Card Header - Always visible */}
                     <div 
-                      className={`text-sm font-medium rounded-full px-3 py-1 mr-3 ${
-                        item.timeOfDay === "Morning"
-                          ? "bg-primary-100 text-primary-800"
-                          : item.timeOfDay === "Midday"
-                          ? "bg-secondary-100 text-secondary-800"
-                          : "bg-neutral-100 text-neutral-800"
-                      }`}
+                      className={`p-4 ${
+                        isExpanded 
+                          ? colorTheme === "primary" 
+                            ? "bg-primary-50" 
+                            : colorTheme === "secondary" 
+                              ? "bg-secondary-50" 
+                              : "bg-neutral-50"
+                          : "bg-white"
+                      } cursor-pointer`}
+                      onClick={() => toggleCardExpansion(index)}
                     >
-                      {item.timeOfDay}
-                    </div>
-                    <div>
-                      <h5 className="font-medium text-lg">{item.supplement}</h5>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        <div className="flex items-center text-primary-500">
-                          <Clock className="h-4 w-4 mr-1" />
-                          <span className="text-sm font-medium">{item.time}</span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-start gap-3">
+                          {/* Time & Dot Indicator */}
+                          <div className="flex flex-col items-center">
+                            <div className={`w-3 h-3 rounded-full ${
+                              colorTheme === "primary" 
+                                ? "bg-primary-500" 
+                                : colorTheme === "secondary" 
+                                  ? "bg-secondary-500" 
+                                  : "bg-neutral-500"
+                            } mb-1`}></div>
+                            <span className={`text-xs font-medium ${
+                              colorTheme === "primary" 
+                                ? "text-primary-700" 
+                                : colorTheme === "secondary" 
+                                  ? "text-secondary-700" 
+                                  : "text-neutral-700"
+                            }`}>{item.time}</span>
+                            <span className="text-xs text-neutral-500">{item.timeOfDay}</span>
+                          </div>
+                          
+                          {/* Supplement Info */}
+                          <div>
+                            <h5 className={`font-medium text-lg ${
+                              colorTheme === "primary" 
+                                ? "text-primary-800" 
+                                : colorTheme === "secondary" 
+                                  ? "text-secondary-800" 
+                                  : "text-neutral-800"
+                            }`}>{item.supplement}</h5>
+                            <p className="text-sm text-neutral-600 mt-1">{quickInstruction}</p>
+                          </div>
                         </div>
                         
-                        {item.brand && (
-                          <div className="flex items-center text-amber-600">
-                            <Star className="h-4 w-4 mr-1" />
-                            <span className="text-sm font-medium">Recommended: {item.brand}</span>
-                          </div>
-                        )}
+                        {/* Expand/Collapse Icon */}
+                        <div className="flex items-center">
+                          <Pill className={`h-5 w-5 mr-2 ${
+                            colorTheme === "primary" 
+                              ? "text-primary-500" 
+                              : colorTheme === "secondary" 
+                                ? "text-secondary-500" 
+                                : "text-neutral-500"
+                          }`} />
+                          {isExpanded ? (
+                            <ChevronUp className="h-5 w-5 text-neutral-400" />
+                          ) : (
+                            <ChevronDown className="h-5 w-5 text-neutral-400" />
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <Pill className={`h-8 w-8 ${
-                    item.timeOfDay === "Morning"
-                      ? "text-primary-500"
-                      : item.timeOfDay === "Midday"
-                      ? "text-secondary-500"
-                      : "text-neutral-500"
-                  }`} />
-                </div>
-                
-                <div className="grid md:grid-cols-2 gap-4 mb-3">
-                  <div className="bg-white p-4 rounded-md border border-primary-100 shadow-sm">
-                    <div className="flex items-center mb-2">
-                      <ScrollText className="h-4 w-4 mr-2 text-primary-500" />
-                      <h6 className="font-medium text-primary-700">Instructions</h6>
-                    </div>
-                    <p className="text-sm text-neutral-700">{item.instructions}</p>
-                  </div>
-                  
-                  <div className="bg-white p-4 rounded-md border border-secondary-100 shadow-sm">
-                    <div className="flex items-center mb-2">
-                      <Star className="h-4 w-4 mr-2 text-secondary-500" />
-                      <h6 className="font-medium text-secondary-700">Benefits</h6>
-                    </div>
                     
-                    {/* Check if reasoning has bullet points (indicated by "-" or "•") */}
-                    {item.reasoning.includes("- ") || item.reasoning.includes("• ") ? (
-                      <ul className="text-sm text-neutral-700 space-y-1 list-disc pl-4">
-                        {item.reasoning.split(/\n/).map((point: string, i: number) => {
-                          const cleanPoint = point.replace(/^[-•]\s+/, "").trim();
-                          return cleanPoint ? (
-                            <li key={i} className="text-sm">{cleanPoint}</li>
-                          ) : null;
-                        })}
-                      </ul>
-                    ) : (
-                      <p className="text-sm text-neutral-700">{item.reasoning}</p>
+                    {/* Expanded Content */}
+                    {isExpanded && (
+                      <div className="p-4 border-t border-neutral-100 bg-white">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          {/* Left Column */}
+                          <div className="space-y-4">
+                            {/* Brand Recommendation */}
+                            {item.brand && (
+                              <div className="bg-amber-50 p-3 rounded-md border border-amber-100">
+                                <div className="flex items-center mb-2">
+                                  <Star className="h-4 w-4 mr-2 text-amber-500" />
+                                  <h6 className="font-medium text-amber-800">Recommended Brand</h6>
+                                </div>
+                                <p className="text-sm text-amber-800">{item.brand}</p>
+                              </div>
+                            )}
+                            
+                            {/* Instructions */}
+                            <div className={`p-3 rounded-md border ${
+                              colorTheme === "primary" 
+                                ? "bg-primary-50 border-primary-100" 
+                                : colorTheme === "secondary" 
+                                  ? "bg-secondary-50 border-secondary-100" 
+                                  : "bg-neutral-50 border-neutral-100"
+                            }`}>
+                              <div className="flex items-center mb-2">
+                                <ScrollText className={`h-4 w-4 mr-2 ${
+                                  colorTheme === "primary" 
+                                    ? "text-primary-500" 
+                                    : colorTheme === "secondary" 
+                                      ? "text-secondary-500" 
+                                      : "text-neutral-500"
+                                }`} />
+                                <h6 className={`font-medium ${
+                                  colorTheme === "primary" 
+                                    ? "text-primary-800" 
+                                    : colorTheme === "secondary" 
+                                      ? "text-secondary-800" 
+                                      : "text-neutral-800"
+                                }`}>Instructions</h6>
+                              </div>
+                              <p className="text-sm text-neutral-700">{item.instructions}</p>
+                            </div>
+                            
+                            {/* Food Pairing */}
+                            {foodPairing && (
+                              <div className="bg-green-50 p-3 rounded-md border border-green-100">
+                                <div className="flex items-center mb-2">
+                                  <Utensils className="h-4 w-4 mr-2 text-green-500" />
+                                  <h6 className="font-medium text-green-800">Food Pairing</h6>
+                                </div>
+                                <p className="text-sm text-green-800">{foodPairing}</p>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Right Column - Benefits */}
+                          <div className="bg-white p-3 rounded-md border border-neutral-200">
+                            <div className="flex items-center mb-2">
+                              <Star className={`h-4 w-4 mr-2 ${
+                                colorTheme === "primary" 
+                                  ? "text-primary-500" 
+                                  : colorTheme === "secondary" 
+                                    ? "text-secondary-500" 
+                                    : "text-neutral-500"
+                              }`} />
+                              <h6 className={`font-medium ${
+                                colorTheme === "primary" 
+                                  ? "text-primary-800" 
+                                  : colorTheme === "secondary" 
+                                    ? "text-secondary-800" 
+                                    : "text-neutral-800"
+                              }`}>Benefits & Scientific Reasoning</h6>
+                            </div>
+                            
+                            {/* Check if reasoning has bullet points */}
+                            {item.reasoning.includes("- ") || item.reasoning.includes("• ") ? (
+                              <ul className="text-sm text-neutral-700 space-y-1 list-disc pl-4">
+                                {item.reasoning.split(/\n/).map((point: string, i: number) => {
+                                  const cleanPoint = point.replace(/^[-•]\s+/, "").trim();
+                                  return cleanPoint ? (
+                                    <li key={i} className="text-sm">{cleanPoint}</li>
+                                  ) : null;
+                                })}
+                              </ul>
+                            ) : (
+                              <p className="text-sm text-neutral-700">{item.reasoning}</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </div>
-                </div>
-              </div>
-            ))}
-          </>
+                );
+              })}
+            </div>
+          </div>
         )}
       </div>
     </div>
