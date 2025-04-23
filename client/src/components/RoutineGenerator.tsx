@@ -77,6 +77,34 @@ export default function RoutineGenerator() {
     const savedRoutine = loadSavedRoutine();
     if (savedRoutine) {
       setRecommendations(savedRoutine);
+      
+      // Try to load saved health goals
+      try {
+        const savedHealthGoals = localStorage.getItem("vitaHealthGoals");
+        if (savedHealthGoals) {
+          const parsedHealthGoals = JSON.parse(savedHealthGoals);
+          if (Array.isArray(parsedHealthGoals)) {
+            setHealthGoalsData({
+              ...healthGoalsData,
+              healthGoals: parsedHealthGoals,
+            });
+          }
+        } else {
+          // If no saved health goals, set a default
+          setHealthGoalsData({
+            ...healthGoalsData,
+            healthGoals: ["general health"],
+          });
+        }
+      } catch (error) {
+        console.error("Error loading saved health goals:", error);
+        // Set default health goal if there's an error
+        setHealthGoalsData({
+          ...healthGoalsData,
+          healthGoals: ["general health"],
+        });
+      }
+      
       setCurrentStep(3); // Skip to results
       toast({
         title: "Routine Loaded",
@@ -134,8 +162,12 @@ export default function RoutineGenerator() {
   const handleSave = () => {
     if (recommendations && recommendations.supplementRoutine) {
       try {
-        // Save just the supplement routine to localStorage
+        // Save the supplement routine to localStorage
         localStorage.setItem("vitaRoutine", JSON.stringify(recommendations.supplementRoutine));
+        
+        // Also save the health goals for context
+        localStorage.setItem("vitaHealthGoals", JSON.stringify(healthGoalsData.healthGoals));
+        
         setHasSavedRoutine(true);
         toast({
           title: "Success",
@@ -203,7 +235,10 @@ export default function RoutineGenerator() {
               </p>
             </div>
             
-            <RoutineDisplay supplementRoutine={recommendations.supplementRoutine} />
+            <RoutineDisplay 
+              supplementRoutine={recommendations.supplementRoutine} 
+              healthGoals={healthGoalsData.healthGoals}
+            />
             <FoodSuggestions foodSuggestions={recommendations.foodSuggestions} />
             <CalendarSync supplementRoutine={recommendations.supplementRoutine} />
             
