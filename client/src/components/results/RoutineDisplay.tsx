@@ -267,22 +267,23 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                                     <Pill className={`h-5 w-5 ${textColor}`} />
                                   </div>
                                   <div>
-                                    <div className="flex items-center">
-                                      <h4 className="font-medium text-neutral-800">💊 {cleanName}</h4>
+                                    <div className="flex items-center flex-wrap">
+                                      <h4 className="font-medium text-neutral-800 mr-2">💊 {cleanName}</h4>
                                       {dosage && (
-                                        <span className="ml-2 text-xs px-2 py-0.5 bg-neutral-100 rounded-full text-neutral-600">
+                                        <span className="mr-2 mb-1 text-xs px-2 py-0.5 bg-neutral-100 rounded-full text-neutral-600">
                                           {dosage}
                                         </span>
                                       )}
                                       
                                       {/* Quick Action Icons - visible on hover */}
-                                      <div className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1">
+                                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1">
                                         <button 
                                           className="p-1 rounded-full hover:bg-blue-100 text-blue-500"
                                           onClick={(e) => {
                                             e.stopPropagation();
                                             alert(`Swap feature for "${item.supplement}" coming soon!`);
                                           }}
+                                          title="Swap supplement"
                                         >
                                           <RefreshCw className="h-3.5 w-3.5" />
                                         </button>
@@ -292,13 +293,14 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                                             e.stopPropagation();
                                             alert(`Remove feature for "${item.supplement}" coming soon!`);
                                           }}
+                                          title="Remove supplement"
                                         >
                                           <X className="h-3.5 w-3.5" />
                                         </button>
                                       </div>
                                     </div>
-                                    <p className="text-sm text-neutral-600 mt-1">
-                                      ✅ {quickInstruction}
+                                    <p className="text-sm text-neutral-600 mt-1 flex items-center">
+                                      <span className="text-green-600 mr-1">✓</span> {quickInstruction}
                                     </p>
                                   </div>
                                 </div>
@@ -316,8 +318,40 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                             {isExpanded && (
                               <div className="p-4 bg-neutral-50 border-t border-neutral-100">
                                 <div className="grid md:grid-cols-2 gap-4">
-                                  {/* Left Column */}
+                                  {/* Left Column - Usage & Brand */}
                                   <div className="space-y-4">
+                                    {/* Usage Guide - Combines instructions and food pairing */}
+                                    <div className="bg-white p-3 rounded-md border border-neutral-200">
+                                      <div className="flex items-center mb-2">
+                                        <ScrollText className="h-4 w-4 mr-2 text-neutral-500" />
+                                        <h6 className="font-medium text-neutral-800">Usage Guide</h6>
+                                      </div>
+                                      
+                                      {/* Simplified instructions */}
+                                      <div className="space-y-2">
+                                        <div className="flex items-start">
+                                          <div className="bg-neutral-100 p-1 rounded-full mr-2 mt-0.5">
+                                            <Clock className="h-3 w-3 text-neutral-600" />
+                                          </div>
+                                          <p className="text-sm text-neutral-700 flex-1">
+                                            {getQuickInstruction(item.instructions)}
+                                          </p>
+                                        </div>
+                                        
+                                        {/* Food pairing if available */}
+                                        {foodPairing && (
+                                          <div className="flex items-start">
+                                            <div className="bg-green-100 p-1 rounded-full mr-2 mt-0.5">
+                                              <Utensils className="h-3 w-3 text-green-600" />
+                                            </div>
+                                            <p className="text-sm text-neutral-700 flex-1">
+                                              Pairs well with: <span className="text-green-700">{foodPairing}</span>
+                                            </p>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                    
                                     {/* Brand Recommendation */}
                                     {item.brand && (
                                       <div className="bg-amber-50 p-3 rounded-md border border-amber-100">
@@ -326,26 +360,6 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                                           <h6 className="font-medium text-amber-800">Suggested Brand</h6>
                                         </div>
                                         <p className="text-sm text-amber-800">{item.brand}</p>
-                                      </div>
-                                    )}
-                                    
-                                    {/* Instructions */}
-                                    <div className="bg-white p-3 rounded-md border border-neutral-200">
-                                      <div className="flex items-center mb-2">
-                                        <ScrollText className="h-4 w-4 mr-2 text-neutral-500" />
-                                        <h6 className="font-medium text-neutral-800">How to Take</h6>
-                                      </div>
-                                      <p className="text-sm text-neutral-700">{item.instructions}</p>
-                                    </div>
-                                    
-                                    {/* Food Pairing */}
-                                    {foodPairing && (
-                                      <div className="bg-green-50 p-3 rounded-md border border-green-100">
-                                        <div className="flex items-center mb-2">
-                                          <Utensils className="h-4 w-4 mr-2 text-green-500" />
-                                          <h6 className="font-medium text-green-800">Pairs Well With</h6>
-                                        </div>
-                                        <p className="text-sm text-green-800">{foodPairing}</p>
                                       </div>
                                     )}
                                   </div>
@@ -398,19 +412,31 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
             </div>
             
             {/* Pro Tips Section */}
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-100 shadow-sm">
               <div className="flex items-center mb-3">
-                <Info className="h-5 w-5 mr-2 text-blue-600" />
-                <h5 className="text-blue-800 font-medium">Pro Tips For Your Routine</h5>
+                <div className="bg-blue-100 p-1.5 rounded-full mr-2">
+                  <Info className="h-4 w-4 text-blue-600" />
+                </div>
+                <h5 className="text-blue-800 font-medium">Pro Tips to Optimize Your Results</h5>
               </div>
               <div className="space-y-3">
-                <div className="flex">
-                  <span className="mr-2">💡</span>
-                  <p className="text-sm text-blue-800">Taking Vitamin D3 and Fish Oil together? That's great! Both are fat-soluble and complement each other well at lunch.</p>
+                <div className="flex items-start">
+                  <div className="bg-amber-100 p-1 rounded-full mr-2 mt-0.5">
+                    <span className="text-amber-600 flex items-center justify-center" style={{ fontSize: '10px', height: '12px', width: '12px', lineHeight: 1 }}>✦</span>
+                  </div>
+                  <p className="text-sm text-blue-700">Taking Vitamin D3 and Fish Oil together? That's great! Both are fat-soluble and complement each other well at lunch.</p>
                 </div>
-                <div className="flex">
-                  <span className="mr-2">💡</span>
-                  <p className="text-sm text-blue-800">If you're sensitive to zinc, try it after a fuller lunch and not on an empty stomach.</p>
+                <div className="flex items-start">
+                  <div className="bg-green-100 p-1 rounded-full mr-2 mt-0.5">
+                    <span className="text-green-600 flex items-center justify-center" style={{ fontSize: '10px', height: '12px', width: '12px', lineHeight: 1 }}>✦</span>
+                  </div>
+                  <p className="text-sm text-blue-700">If you're sensitive to zinc, try it after a fuller lunch and not on an empty stomach.</p>
+                </div>
+                <div className="flex items-start">
+                  <div className="bg-purple-100 p-1 rounded-full mr-2 mt-0.5">
+                    <span className="text-purple-600 flex items-center justify-center" style={{ fontSize: '10px', height: '12px', width: '12px', lineHeight: 1 }}>✦</span>
+                  </div>
+                  <p className="text-sm text-blue-700">Try keeping your supplements in visible places as reminders - morning ones by your coffee maker, evening ones by your toothbrush.</p>
                 </div>
               </div>
             </div>
