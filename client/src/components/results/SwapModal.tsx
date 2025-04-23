@@ -19,14 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// The newest OpenAI model is "gpt-4o" which was released May 13, 2024
-// Do not change this unless explicitly requested by the user
-import OpenAI from "openai";
-
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY || '',
-  dangerouslyAllowBrowser: true,
-});
+// Define predefined alternatives instead of using OpenAI
+// This approach removes the requirement for an API key
 
 interface SwapModalProps {
   isOpen: boolean;
@@ -73,76 +67,194 @@ export default function SwapModal({
   const cleanName = getCleanName(supplement.supplement);
   const supplementDosage = getDosage(supplement.supplement);
 
+  // Predefined alternatives for common supplements
+  const commonAlternatives: Record<string, SupplementRoutineItem[]> = {
+    "vitamin d": [
+      {
+        supplement: "Vitamin K2 (100mcg)",
+        instructions: "Take once daily with a fatty meal for optimal absorption. Best paired with calcium-rich foods.",
+        reasoning: "Vitamin K2 works synergistically with vitamin D to support bone health by directing calcium to bones rather than soft tissues. It also supports cardiovascular health.",
+        timeOfDay: supplement.timeOfDay,
+        time: supplement.time,
+        brand: "Life Extension or NOW Foods"
+      },
+      {
+        supplement: "Cod Liver Oil (1000mg)",
+        instructions: "Take one capsule with breakfast. Store in a cool place to prevent oxidation.",
+        reasoning: "Natural source of vitamins A and D plus omega-3 fatty acids. Supports immune function, bone health, and reduces inflammation.",
+        timeOfDay: supplement.timeOfDay,
+        time: supplement.time,
+        brand: "Nordic Naturals or Carlson"
+      }
+    ],
+    "fish oil": [
+      {
+        supplement: "Algal Oil (500mg DHA/EPA)",
+        instructions: "Take 1-2 capsules daily with food to minimize any aftertaste.",
+        reasoning: "Plant-based alternative to fish oil that provides similar omega-3 benefits. Supports brain health, reduces inflammation, and is suitable for vegetarians and vegans.",
+        timeOfDay: supplement.timeOfDay,
+        time: supplement.time,
+        brand: "Nordic Naturals or Deva"
+      },
+      {
+        supplement: "Flaxseed Oil (1000mg)",
+        instructions: "Take 1-2 capsules with meals. Can also be used in salad dressings or smoothies.",
+        reasoning: "Rich in alpha-linolenic acid (ALA), a plant-based omega-3 that supports heart health and reduces inflammation. Budget-friendly alternative to fish oil.",
+        timeOfDay: supplement.timeOfDay,
+        time: supplement.time,
+        brand: "Barlean's or Spectrum Naturals"
+      }
+    ],
+    "magnesium": [
+      {
+        supplement: "Calcium Citrate (500mg)",
+        instructions: "Take with dinner or before bed. Can be taken without food unlike some other forms of calcium.",
+        reasoning: "Works synergistically with magnesium to support bone health, muscle function, and nervous system. Citrate form is better absorbed than carbonate forms.",
+        timeOfDay: supplement.timeOfDay,
+        time: supplement.time,
+        brand: "Solgar or Pure Encapsulations"
+      },
+      {
+        supplement: "Zinc Glycinate (15mg)",
+        instructions: "Take with food to minimize stomach discomfort. Avoid taking with calcium supplements.",
+        reasoning: "Supports immune function, wound healing, and protein synthesis. Plays a role in over 300 enzymatic reactions in the body similar to magnesium.",
+        timeOfDay: supplement.timeOfDay,
+        time: supplement.time,
+        brand: "Thorne or Pure Encapsulations"
+      }
+    ],
+    "probiotic": [
+      {
+        supplement: "Prebiotic Fiber (5g)",
+        instructions: "Mix with water or add to smoothies. Start with a small dose and gradually increase to avoid gas or bloating.",
+        reasoning: "Feeds beneficial gut bacteria rather than introducing new ones. Supports digestive health, immunity, and helps existing beneficial bacteria flourish.",
+        timeOfDay: supplement.timeOfDay,
+        time: supplement.time,
+        brand: "Jarrow Formulas or Hyperbiotics"
+      },
+      {
+        supplement: "Fermented Foods (1 serving)",
+        instructions: "Include a serving of kimchi, sauerkraut, kefir, or yogurt with meals daily.",
+        reasoning: "Natural source of probiotics with additional nutrients and enzymes. Supports gut health and provides a diverse array of beneficial bacteria.",
+        timeOfDay: supplement.timeOfDay,
+        time: supplement.time,
+        brand: "N/A - choose organic options when possible"
+      }
+    ],
+    "vitamin c": [
+      {
+        supplement: "Quercetin (500mg)",
+        instructions: "Take with meals to enhance absorption. Can be paired with vitamin C for enhanced effects.",
+        reasoning: "Powerful antioxidant and natural antihistamine. Supports immune function and has anti-inflammatory properties similar to vitamin C.",
+        timeOfDay: supplement.timeOfDay,
+        time: supplement.time,
+        brand: "Thorne or Pure Encapsulations"
+      },
+      {
+        supplement: "Whole Food Vitamin C (250mg)",
+        instructions: "Take with or without food. Divide doses throughout the day for optimal absorption if taking higher amounts.",
+        reasoning: "Contains natural cofactors and bioflavonoids that enhance absorption and effectiveness compared to synthetic ascorbic acid.",
+        timeOfDay: supplement.timeOfDay,
+        time: supplement.time,
+        brand: "Garden of Life or MegaFood"
+      }
+    ],
+    "zinc": [
+      {
+        supplement: "Copper Glycinate (2mg)",
+        instructions: "Take with food to minimize stomach discomfort. Important to balance with zinc intake.",
+        reasoning: "Works in balance with zinc in the body. Supports immune function, collagen production, and iron metabolism.",
+        timeOfDay: supplement.timeOfDay,
+        time: supplement.time,
+        brand: "Pure Encapsulations or Thorne"
+      },
+      {
+        supplement: "Selenium (200mcg)",
+        instructions: "Take with food once daily. Do not exceed recommended dosage as selenium can be toxic at high levels.",
+        reasoning: "Trace mineral that supports immune function and acts as an antioxidant. Works synergistically with zinc for thyroid function and immunity.",
+        timeOfDay: supplement.timeOfDay,
+        time: supplement.time,
+        brand: "NOW Foods or Life Extension"
+      }
+    ]
+  };
+
+  // Generic alternatives for when no specific match is found
+  const genericAlternatives: SupplementRoutineItem[] = [
+    {
+      supplement: "Multivitamin (Complete Formula)",
+      instructions: "Take with breakfast or your largest meal of the day for optimal absorption of fat-soluble vitamins.",
+      reasoning: "Provides a broad spectrum of essential nutrients that can help fill multiple nutritional gaps. Contains various vitamins and minerals that support overall health.",
+      timeOfDay: supplement.timeOfDay,
+      time: supplement.time,
+      brand: "Thorne Basic Nutrients or Pure Encapsulations"
+    },
+    {
+      supplement: "Greens Powder (1 scoop)",
+      instructions: "Mix with water or add to a smoothie. Best taken earlier in the day.",
+      reasoning: "Concentrated source of phytonutrients from various green vegetables and superfoods. Provides antioxidants and supports detoxification, immune function, and overall wellness.",
+      timeOfDay: supplement.timeOfDay,
+      time: supplement.time,
+      brand: "Athletic Greens or Amazing Grass"
+    },
+    {
+      supplement: "Adaptogenic Herb Blend (500mg)",
+      instructions: "Take once or twice daily with or without food. Consistent daily use yields best results.",
+      reasoning: "Helps the body adapt to physical and mental stressors. Supports energy, mood, immune function, and overall resilience.",
+      timeOfDay: supplement.timeOfDay,
+      time: supplement.time,
+      brand: "Gaia Herbs or Himalaya"
+    }
+  ];
+
   const handleGenerateAlternative = async () => {
     setIsLoading(true);
     setError(null);
     
-    // Check if OpenAI API key is available
-    if (!import.meta.env.VITE_OPENAI_API_KEY) {
-      setError("OPENAI_API_KEY is missing. This feature requires an OpenAI API key to generate alternative supplements.");
-      setIsLoading(false);
-      return;
-    }
-    
     try {
-      // Prepare health goals text
-      const goalsText = healthGoals && healthGoals.length > 0 
-        ? healthGoals.join(", ") 
-        : "general health";
+      // Simulate API call with a timeout
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Create the prompt for GPT-4o
-      const prompt = `
-You are a supplements expert assistant helping suggest an alternative supplement.
-
-Original supplement details:
-- Name: ${cleanName}
-- Dosage: ${supplementDosage || "Not specified"}
-- Time of day: ${supplement.timeOfDay} (${supplement.time})
-- Instructions: ${supplement.instructions}
-- Reasoning/Benefits: ${supplement.reasoning}
-- Health goals: ${goalsText}
-
-User preference: ${preference !== "any" ? preference : "Any suitable alternative"}
-
-Suggest ONE alternative to ${cleanName} that:
-1. Supports the same health goals
-2. Serves a similar function
-3. Matches the user preference if specified (${preference})
-
-Return ONLY a valid JSON object with these exact keys:
-{
-  "supplement": "Name (with dosage in parentheses)",
-  "instructions": "Clear instructions on how/when to take it",
-  "reasoning": "Brief explanation of why this is a good alternative",
-  "timeOfDay": "${supplement.timeOfDay}",
-  "time": "${supplement.time}",
-  "brand": "Suggested brand (optional)"
-}
-`;
-
-      // Call the OpenAI API
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
-        response_format: { type: "json_object" },
-      });
-
-      const responseText = response.choices[0].message.content;
-      if (!responseText) {
-        throw new Error("Empty response from AI");
+      // Find matching alternatives based on the supplement name
+      let alternatives: SupplementRoutineItem[] = [];
+      
+      // Search for alternatives based on key supplement terms
+      const lowerCaseName = cleanName.toLowerCase();
+      for (const [key, alts] of Object.entries(commonAlternatives)) {
+        if (lowerCaseName.includes(key)) {
+          alternatives = alts;
+          break;
+        }
       }
-
-      try {
-        const alternativeData = JSON.parse(responseText) as SupplementRoutineItem;
-        setAlternativeSupplement(alternativeData);
-      } catch (parseError) {
-        console.error("Failed to parse response:", parseError);
-        setError("Failed to parse the AI response. Please try again.");
+      
+      // If no specific alternative was found, use generic ones
+      if (alternatives.length === 0) {
+        alternatives = genericAlternatives;
       }
+      
+      // Filter based on preference if applicable
+      if (preference !== "any") {
+        const prefText = preference.toLowerCase();
+        let preferredAlts = alternatives.filter(alt => 
+          alt.supplement.toLowerCase().includes(prefText) || 
+          alt.reasoning.toLowerCase().includes(prefText) ||
+          alt.instructions.toLowerCase().includes(prefText)
+        );
+        
+        // If no preference-specific alternatives, use the original list
+        if (preferredAlts.length > 0) {
+          alternatives = preferredAlts;
+        }
+      }
+      
+      // Select a random alternative from the filtered list
+      const randomIndex = Math.floor(Math.random() * alternatives.length);
+      const selectedAlternative = alternatives[randomIndex];
+      
+      setAlternativeSupplement(selectedAlternative);
     } catch (err) {
       console.error("Error generating alternative:", err);
-      setError("Failed to generate an alternative. Please try again later.");
+      setError("Failed to generate an alternative. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -249,54 +361,13 @@ Return ONLY a valid JSON object with these exact keys:
           {error && (
             <div className="bg-red-50 p-4 rounded-lg border border-red-100">
               <p className="text-red-700 text-sm">{error}</p>
-              
-              {/* Special handling for API key errors */}
-              {error.includes("OPENAI_API_KEY") ? (
-                <div className="mt-2">
-                  <p className="text-neutral-700 text-xs mt-2">
-                    To use this feature, you need an OpenAI API key. You can get one by:
-                  </p>
-                  <ol className="text-neutral-700 text-xs mt-1 list-decimal pl-4 space-y-1">
-                    <li>Creating an account at <a href="https://openai.com" className="text-blue-500 hover:underline" target="_blank" rel="noopener noreferrer">OpenAI.com</a></li>
-                    <li>Going to the API section and creating a new API key</li>
-                  </ol>
-                  
-                  <div className="mt-3 flex justify-between">
-                    <Button 
-                      variant="outline" 
-                      className="text-xs bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100"
-                      onClick={() => {
-                        // This would be handled by the ask_secrets tool in the actual implementation
-                        toast({
-                          title: "API Key Required",
-                          description: "To use the Swap Supplement feature, please provide your OpenAI API key in the environment variables.",
-                          duration: 5000,
-                        });
-                      }}
-                    >
-                      Add API Key
-                    </Button>
-                    
-                    <Button 
-                      variant="outline" 
-                      className="text-xs bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
-                      onClick={() => {
-                        window.location.reload();
-                      }}
-                    >
-                      I've Added My API Key
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <Button 
-                  variant="outline" 
-                  className="mt-2" 
-                  onClick={() => setError(null)}
-                >
-                  Try Again
-                </Button>
-              )}
+              <Button 
+                variant="outline" 
+                className="mt-2" 
+                onClick={() => setError(null)}
+              >
+                Try Again
+              </Button>
             </div>
           )}
 
