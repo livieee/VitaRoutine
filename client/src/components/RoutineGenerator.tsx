@@ -9,7 +9,6 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Save } from "lucide-react";
 import { 
   HealthGoalsFormData, 
   LifestyleFormData, 
@@ -81,7 +80,7 @@ export default function RoutineGenerator() {
       setCurrentStep(3); // Skip to results
       toast({
         title: "Routine Loaded",
-        description: "Welcome back! Your saved supplement routine has been loaded successfully.",
+        description: "Your saved supplement routine has been loaded successfully.",
         duration: 3000,
       });
     } else {
@@ -140,7 +139,7 @@ export default function RoutineGenerator() {
         setHasSavedRoutine(true);
         toast({
           title: "Success",
-          description: "Routine saved! Come back anytime to check or update it.",
+          description: "Your supplement routine has been saved successfully!",
           duration: 3000,
         });
       } catch (error) {
@@ -215,9 +214,8 @@ export default function RoutineGenerator() {
               >
                 Back
               </Button>
-              <Button onClick={handleSave} className="flex items-center">
-                <Save className="h-4 w-4 mr-2" />
-                💾 Save My Routine
+              <Button onClick={handleSave}>
+                Save Routine
               </Button>
             </div>
           </>
