@@ -36,6 +36,9 @@ export default function RoutineDisplay({ supplementRoutine, healthGoals = ["gene
   const [isAskAIModalOpen, setIsAskAIModalOpen] = useState(false);
   const [selectedSupplement, setSelectedSupplement] = useState<SupplementRoutineItem | null>(null);
   
+  // State for Swap modal
+  const [isSwapModalOpen, setIsSwapModalOpen] = useState(false);
+  
   // Update currentRoutine when removedItems changes
   useEffect(() => {
     const updatedRoutine = supplementRoutine.filter((_, index) => !removedItems[index.toString()]);
@@ -195,6 +198,37 @@ export default function RoutineDisplay({ supplementRoutine, healthGoals = ["gene
   // Clean supplement name by removing dosage
   const getCleanName = (supplement: string): string => {
     return supplement.replace(/\s*\([^)]*\)/, '').trim();
+  };
+  
+  // Function to handle successful supplement swap
+  const handleSwapSuccess = (originalItem: SupplementRoutineItem, newItem: SupplementRoutineItem) => {
+    // Create a copy of the supplement routine
+    const updatedRoutine = [...supplementRoutine];
+    
+    // Find the index of the original item
+    const itemIndex = updatedRoutine.findIndex(
+      item => item.supplement === originalItem.supplement && 
+              item.timeOfDay === originalItem.timeOfDay
+    );
+    
+    // If the item was found, replace it with the new item
+    if (itemIndex !== -1) {
+      updatedRoutine[itemIndex] = newItem;
+      
+      // Update the supplementRoutine state
+      // Note: We're using a workaround here since supplementRoutine is a prop
+      // In a real application, this would be managed by the parent component
+      // or a state management solution
+      
+      // We update currentRoutine which we do have direct control over
+      const filteredUpdatedRoutine = updatedRoutine.filter(
+        (_, index) => !removedItems[index.toString()]
+      );
+      setCurrentRoutine(filteredUpdatedRoutine);
+      
+      // Mark as unsaved since we've modified the routine
+      setIsSaved(false);
+    }
   };
 
   return (
@@ -435,7 +469,8 @@ export default function RoutineDisplay({ supplementRoutine, healthGoals = ["gene
                                           className="p-1 rounded-full hover:bg-blue-100 text-blue-500"
                                           onClick={(e) => {
                                             e.stopPropagation();
-                                            alert(`Swap feature for "${item.supplement}" coming soon!`);
+                                            setSelectedSupplement(item);
+                                            setIsSwapModalOpen(true);
                                           }}
                                           title="Swap supplement"
                                         >
@@ -543,7 +578,8 @@ export default function RoutineDisplay({ supplementRoutine, healthGoals = ["gene
                                     className="flex items-center px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-md text-sm transition-all duration-150"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      alert(`Swap ${cleanName} feature coming soon!`);
+                                      setSelectedSupplement(item);
+                                      setIsSwapModalOpen(true);
                                     }}
                                   >
                                     <RefreshCw className="h-4 w-4 mr-2" />
@@ -618,6 +654,17 @@ export default function RoutineDisplay({ supplementRoutine, healthGoals = ["gene
           onClose={() => setIsAskAIModalOpen(false)}
           supplement={selectedSupplement}
           healthGoals={healthGoals}
+        />
+      )}
+      
+      {/* Swap Supplement Modal */}
+      {selectedSupplement && (
+        <SwapModal
+          isOpen={isSwapModalOpen}
+          onClose={() => setIsSwapModalOpen(false)}
+          supplement={selectedSupplement}
+          healthGoals={healthGoals}
+          onSwapSuccess={handleSwapSuccess}
         />
       )}
     </div>
