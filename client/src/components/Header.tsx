@@ -5,11 +5,9 @@ export default function Header() {
     <header className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <div className="flex items-center space-x-3">
-          {/* Blue Heart Logo */}
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-2.5 rounded-full border border-blue-200 shadow-sm">
-            <div className="relative h-7 w-7 flex items-center justify-center">
-              <Heart className="h-5 w-5 text-blue-500" fill="currentColor" />
-            </div>
+          {/* Empty Blue Heart Logo */}
+          <div className="relative h-7 w-7 flex items-center justify-center">
+            <Heart className="h-7 w-7 text-blue-500 stroke-2" />
           </div>
           <div>
             <h1 className="text-xl font-semibold text-neutral-800">

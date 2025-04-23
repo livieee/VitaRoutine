@@ -8,11 +8,9 @@ export default function Footer() {
           {/* Logo and Description */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-3">
-              {/* Blue Heart Logo (smaller version) */}
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-1.5 rounded-full border border-blue-200 shadow-sm">
-                <div className="relative h-5 w-5 flex items-center justify-center">
-                  <Heart className="h-4 w-4 text-blue-500" fill="currentColor" />
-                </div>
+              {/* Empty Blue Heart Logo (smaller version) */}
+              <div className="relative h-5 w-5 flex items-center justify-center">
+                <Heart className="h-5 w-5 text-blue-500 stroke-2" />
               </div>
               <h2 className="text-lg font-semibold text-neutral-800">
                 <span className="bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">Vita</span>
