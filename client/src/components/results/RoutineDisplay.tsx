@@ -318,17 +318,8 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                             {isExpanded && (
                               <div className="p-4 bg-neutral-50 border-t border-neutral-100">
                                 <div className="grid md:grid-cols-2 gap-4">
-                                  {/* Left Column - Usage & Brand */}
+                                  {/* Left Column - Brand & Usage */}
                                   <div className="space-y-4">
-                                    {/* Usage Guide - Instructions with food context */}
-                                    <div className="bg-white p-3 rounded-md border border-neutral-200">
-                                      <div className="flex items-center mb-2">
-                                        <ScrollText className="h-4 w-4 mr-2 text-neutral-500" />
-                                        <h6 className="font-medium text-neutral-800">Usage Guide</h6>
-                                      </div>
-                                      <p className="text-sm text-neutral-700">{item.instructions}</p>
-                                    </div>
-                                    
                                     {/* Brand Recommendation */}
                                     {item.brand && (
                                       <div className="bg-amber-50 p-3 rounded-md border border-amber-100">
@@ -339,6 +330,15 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                                         <p className="text-sm text-amber-800">{item.brand}</p>
                                       </div>
                                     )}
+                                    
+                                    {/* Usage Guide - Instructions with food context */}
+                                    <div className="bg-white p-3 rounded-md border border-neutral-200">
+                                      <div className="flex items-center mb-2">
+                                        <ScrollText className="h-4 w-4 mr-2 text-neutral-500" />
+                                        <h6 className="font-medium text-neutral-800">Usage Guide</h6>
+                                      </div>
+                                      <p className="text-sm text-neutral-700">{item.instructions}</p>
+                                    </div>
                                   </div>
                                   
                                   {/* Right Column - Benefits */}
