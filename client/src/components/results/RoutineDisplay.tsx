@@ -248,11 +248,67 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                         <span className="font-medium">Note:</span> You've removed {Object.keys(removedItems).length} supplement{Object.keys(removedItems).length !== 1 ? 's' : ''} from your routine.
                       </p>
                       <p className="text-xs text-red-600 mt-1">
-                        Removed supplements won't appear in your saved routine. 
+                        Removed supplements won't appear in your saved routine.
                       </p>
                     </div>
                   </div>
-                  <div className="flex justify-end mt-2">
+                  
+                  {/* List of removed supplements */}
+                  <div className="mt-3 mb-2 space-y-2">
+                    <p className="text-xs font-medium text-red-700">Removed supplements:</p>
+                    
+                    <div className="bg-white rounded border border-red-100 divide-y divide-red-50">
+                      {Object.keys(removedItems).map(indexStr => {
+                        const index = parseInt(indexStr);
+                        if (isNaN(index) || !supplementRoutine[index]) return null;
+                        
+                        const item = supplementRoutine[index];
+                        const cleanName = getCleanName(item.supplement);
+                        const dosage = getDosage(item.supplement);
+                        
+                        return (
+                          <div key={`removed-${index}`} className="px-3 py-2 flex items-center justify-between">
+                            <div className="flex items-center">
+                              <Pill className="h-4 w-4 text-red-500 mr-2" />
+                              <span className="text-xs text-neutral-700">{cleanName}</span>
+                              {dosage && (
+                                <span className="ml-1 text-xs text-neutral-500">({dosage})</span>
+                              )}
+                              <span className="ml-2 text-xs text-neutral-500">{item.timeOfDay}</span>
+                            </div>
+                            <button
+                              onClick={() => {
+                                // Remove the item from the removedItems state
+                                const updatedRemovedItems = {...removedItems};
+                                delete updatedRemovedItems[index];
+                                setRemovedItems(updatedRemovedItems);
+                                
+                                // Update localStorage if needed
+                                if (Object.keys(updatedRemovedItems).length > 0) {
+                                  localStorage.setItem("vitaRemovedItems", JSON.stringify(updatedRemovedItems));
+                                } else {
+                                  localStorage.removeItem("vitaRemovedItems");
+                                }
+                                
+                                setIsSaved(false);
+                                toast({
+                                  title: "Supplement Restored",
+                                  description: `${cleanName} has been restored to your routine.`,
+                                  duration: 3000,
+                                });
+                              }}
+                              className="text-xs text-blue-600 hover:text-blue-800 flex items-center"
+                            >
+                              <RefreshCw className="h-3 w-3 mr-1" />
+                              Restore
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-end mt-3">
                     <button
                       onClick={() => {
                         // Clear removed items
@@ -261,7 +317,7 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                         localStorage.removeItem("vitaRemovedItems");
                         setIsSaved(false);
                         toast({
-                          title: "Supplements Restored",
+                          title: "All Supplements Restored",
                           description: "All supplements have been restored to your routine.",
                           duration: 3000,
                         });
@@ -269,7 +325,7 @@ export default function RoutineDisplay({ supplementRoutine }: RoutineDisplayProp
                       className="flex items-center px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-md text-xs font-medium transition-all duration-150"
                     >
                       <RefreshCw className="h-3 w-3 mr-1" />
-                      Restore All Supplements
+                      Restore All
                     </button>
                   </div>
                 </div>
