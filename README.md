@@ -38,8 +38,8 @@ The application uses advanced algorithms to generate tailored supplement routine
 
 1. Clone the repository:
    ```
-   git clone https://github.com/YOUR_USERNAME/vitaroutine.git
-   cd vitaroutine
+   git clone https://github.com/livieee/VitaRoutine.git
+   cd VitaRoutine
    ```
 
 2. Install dependencies:
